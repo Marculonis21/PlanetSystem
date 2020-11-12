@@ -12,4 +12,4 @@ Projekt, vytvořit app v Pythonu s nějakou lib (asi pygame), kde si uživatel b
   - uvidíme jaká bude třeba optimalizace (*očekávám že moc ne*)
 * [ ] vizualizace průběhu simulace
   - * [ ] zpětná - ukázat, kudy se pohybovaly
-  - * [X] budoucí - vhodné pro určení vlastností objektů (*ukázat jak se bude trajektorie vyvíjet v závislosti na vlastnostech objektu*)  
+  - * [V] budoucí - vhodné pro určení vlastností objektů (*ukázat jak se bude trajektorie vyvíjet v závislosti na vlastnostech objektu*)  
