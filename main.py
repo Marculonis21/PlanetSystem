@@ -4,6 +4,7 @@ import pygame as PG
 import sys
 
 import SpaceObject as SO
+import UIObject as UI
 
 WIDTH = HEIGHT = 800 
 
@@ -14,6 +15,7 @@ clock = PG.time.Clock()
 
 #EVENTS
 PAUSED = True
+POPUP = False
 
 #VARIABLES
 camXY = PG.Vector2(0,0)
@@ -68,10 +70,12 @@ def sim():
 
         obj.simSteps.append(SO.simVars(nPos,nVel))
         
+popup = UI.ObjPopup()
 
 while True:
     backgroundDrawing()
     spaceObjectDrawing()
+    # print(PG.mouse.get_pos())
 
     for event in PG.event.get():
         if event.type == PG.QUIT: sys.exit()
@@ -81,11 +85,13 @@ while True:
                 PAUSED = True
                 TIMESTEP = 0
 
-                objectList.append(SO.Object((camXY.x+WIDTH//2+200,camXY.y+HEIGHT//2+200), (0,-5), 800, TIMESTEP))
-                objectList.append(SO.Object((camXY.x+WIDTH//4,camXY.y+HEIGHT//4), (0,5), 200, TIMESTEP))
+                objectList.append(SO.Object((camXY.x+WIDTH//2,camXY.y+HEIGHT//2), [0,0], 200))
+                # objectList.append(SO.Object((camXY.x+WIDTH//2+200,camXY.y+HEIGHT//2+200), [0,-5], 800))
+                # objectList.append(SO.Object((camXY.x+WIDTH//4,camXY.y+HEIGHT//4), [0,5], 200))
             if event.key == PG.K_p:
                 PAUSED = not PAUSED
-
+            if event.key == PG.K_s:
+                POPUP = not POPUP
             if event.key == PG.K_RIGHT:
                 camXY[0] += 100
             if event.key == PG.K_LEFT:
@@ -94,6 +100,12 @@ while True:
                 camXY[1] -= 100
             if event.key == PG.K_DOWN:
                 camXY[1] += 100
+
+        if (POPUP) and (PAUSED):
+            popup.event_handler(event)
+
+    if (POPUP) and (PAUSED):
+        popup.draw(screen, objectList[0])
 
     if not (PAUSED):
         REALTIME += clock.get_time()/1000

@@ -5,7 +5,7 @@ import random
 MASS2SIZE = 1/8
 
 class Object:
-    def __init__(self, startPosition, startVelocity, mass, TIMESTEP):
+    def __init__(self, startPosition, startVelocity, mass):
         self.startPosition = startPosition
         self.startVelocity = startVelocity
         self.mass = mass
