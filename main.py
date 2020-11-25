@@ -48,7 +48,7 @@ def backgroundDrawing():
 
 def spaceObjectDrawing():
     for obj in objectList:
-        PG.draw.circle(screen, PG.Color("yellow"), obj.GetStepPos(TIMESTEP, camXY), int(obj.size))
+        PG.draw.circle(screen, obj.color, obj.GetStepPos(TIMESTEP, camXY), int(obj.size))
 
 def sim():
     for obj in objectList:
@@ -78,34 +78,39 @@ while True:
     # print(PG.mouse.get_pos())
 
     for event in PG.event.get():
-        if event.type == PG.QUIT: sys.exit()
+        if (event.type == PG.QUIT): sys.exit()
 
         if event.type == PG.KEYUP:
-            if event.key == PG.K_a:
-                PAUSED = True
-                TIMESTEP = 0
+            if not POPUP:
+                if event.key == PG.K_a:
+                    PAUSED = True
+                    TIMESTEP = 0
 
-                objectList.append(SO.Object((camXY.x+WIDTH//2,camXY.y+HEIGHT//2), [0,0], 200))
-                # objectList.append(SO.Object((camXY.x+WIDTH//2+200,camXY.y+HEIGHT//2+200), [0,-5], 800))
-                # objectList.append(SO.Object((camXY.x+WIDTH//4,camXY.y+HEIGHT//4), [0,5], 200))
+                    objectList.append(SO.Object((camXY.x+WIDTH//2,camXY.y+HEIGHT//2), [0,0], 200))
+                    objectList[0].SetColor(PG.Color(10,10,10))
+                    # objectList.append(SO.Object((camXY.x+WIDTH//2+200,camXY.y+HEIGHT//2+200), [0,-5], 800))
+                    # objectList.append(SO.Object((camXY.x+WIDTH//4,camXY.y+HEIGHT//4), [0,5], 200))
             if event.key == PG.K_p:
                 PAUSED = not PAUSED
             if event.key == PG.K_s:
                 POPUP = not POPUP
-            if event.key == PG.K_RIGHT:
-                camXY[0] += 100
-            if event.key == PG.K_LEFT:
-                camXY[0] -= 100
-            if event.key == PG.K_UP:
-                camXY[1] -= 100
-            if event.key == PG.K_DOWN:
-                camXY[1] += 100
+                popup.inputs = []
+
+            if not POPUP:
+                if event.key == PG.K_RIGHT:
+                    camXY[0] += 100
+                if event.key == PG.K_LEFT:
+                    camXY[0] -= 100
+                if event.key == PG.K_UP:
+                    camXY[1] -= 100
+                if event.key == PG.K_DOWN:
+                    camXY[1] += 100
 
         if (POPUP) and (PAUSED):
             popup.event_handler(event)
 
     if (POPUP) and (PAUSED):
-        popup.draw(screen, objectList[0])
+        popup.draw(screen, objectList[0], camXY)
 
     if not (PAUSED):
         REALTIME += clock.get_time()/1000

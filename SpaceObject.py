@@ -2,7 +2,7 @@
 import pygame as PG
 import random
 
-MASS2SIZE = 1/8
+MASS2SIZE = 1/500
 
 class Object:
     def __init__(self, startPosition, startVelocity, mass):
@@ -10,7 +10,7 @@ class Object:
         self.startVelocity = startVelocity
         self.mass = mass
 
-        self.size = mass*(MASS2SIZE) + 10
+        self.size = mass*(MASS2SIZE) + 20
         self.color = (random.randint(0,255),
                       random.randint(0,255),
                       random.randint(0,255))
@@ -23,7 +23,7 @@ class Object:
 
     def SetMass(self, mass):
         self.mass = mass
-        self.size2D = mass*(MASS2SIZE)
+        self.size = mass*(MASS2SIZE) + 20
 
     def SetColor(self, color):
         self.color = color
