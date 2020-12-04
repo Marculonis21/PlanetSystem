@@ -14,7 +14,7 @@ class UI:
 
         self.FONT = PG.font.SysFont('Arial', 20, False, False)
 
-    def draw(self, screen, position):
+    def Draw(self, screen, position):
         pos = PG.Vector2(position) + self.posOffset
 
         screen.blit(self.image, pos)
@@ -41,29 +41,29 @@ class ObjPopup(UI):
                       "Y:",
                       "RGB Golor:"]
 
-    def draw(self, screen, obj, offset):
+    def Draw(self, screen, obj, offset):
         pos = obj.startPosition + offset
         self.obj = obj
         if (self.inputs == []):
-            self.setupInput(pos+self.posOffset+self.itemPos, self.obj)
+            self.SetupInput(pos+self.posOffset+self.itemPos, self.obj)
 
-        super().draw(screen,pos)
+        super().Draw(screen,pos)
 
         for inp in self.inputs:
-            inp.draw(screen)
+            inp.Draw(screen)
 
-    def setupInput(self, pos, obj):
+    def SetupInput(self, pos, obj):
         x = pos.x
         y = pos.y
 
         self.inputs = [InputField(x+100,  y+25,80,23,str(obj.mass),5,"mass"),
-                       InputField(x+100,  y+75,80,23,str(obj.startVelocity[0]),5,"xvel"),
-                       InputField(x+100, y+100,80,23,str(obj.startVelocity[1]),5,"yvel"),
+                       InputField(x+100,  y+75,80,23,str(obj.simSteps[0].vel.x),5,"xvel"),
+                       InputField(x+100, y+100,80,23,str(obj.simSteps[0].vel.y),5,"yvel"),
                        InputField(x,    y+150,45,23,str(obj.color[0]),5,"r"),
                        InputField(x+50, y+150,45,23,str(obj.color[1]),5,"g"),
                        InputField(x+100,y+150,45,23,str(obj.color[2]),5,"b")]
 
-    def event_handler(self, event):
+    def Event_handler(self, event):
         for inp in self.inputs:
             if event.type == PG.MOUSEBUTTONDOWN:
                 if inp.field.collidepoint(event.pos):
@@ -125,10 +125,12 @@ class ObjPopup(UI):
                     # ALLOWED KEYS
                     elif (str(key) in "0123456789-."):
                         if (key == "-"):
-                            if (inp.text[0] == "-"):
-                                inp.text = inp.text[1:]
-                            else:
-                                inp.text = "-"+inp.text
+                            inp.text = "-"+inp.text
+                            if (len(inp.text) > 1):
+                                if (inp.text[0] == inp.text[1] == "-"):
+                                    print("1")
+                                    inp.text = inp.text[2:]
+                                
                         else:
                             inp.text = inp.text[:len(inp.text)-inp.cursor] + str(key) + inp.text[len(inp.text)-inp.cursor:]
 
@@ -140,11 +142,11 @@ class ObjPopup(UI):
                     if (inp.pointer == "xvel"): 
                         try: X = float(inp.text) 
                         except ValueError: X = 0
-                        self.obj.startVelocity[0] = X
+                        self.obj.simSteps[0].vel.x = X
                     if (inp.pointer == "yvel"): 
                         try: Y = float(inp.text) 
                         except ValueError: Y = 0
-                        self.obj.startVelocity[1] = Y
+                        self.obj.simSteps[0].vel.y = Y
 
                     r = self.obj.color[0]
                     g = self.obj.color[1]
@@ -189,7 +191,7 @@ class InputField:
 
         self.textSurface = self.FONT.render(self.text, True, self.color)
 
-    def draw(self, screen):
+    def Draw(self, screen):
         self.color = self.SELECTED_COLOR if self.selected else self.DESELECTED_COLOR
 
         drawText = None

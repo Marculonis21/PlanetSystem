@@ -18,26 +18,27 @@ PAUSED = True
 POPUP = False
 
 #VARIABLES
-camXY = PG.Vector2(0,0)
-gridSize = 0
-
 TIMESTEP = 0
 REALTIME = 0
-FPS = 24
-GRAV_CONS = 6.67430*10**(1)
 
+POPUP_obj = None
+camXY = PG.Vector2(0,0)
+staticObj = None
 objectList = []
+popup = UI.ObjPopup()
 
-def step():
-    global TIMESTEP
-    sim()
-    TIMESTEP += 1
+#CONSTANTS
+PFPS = 30 
+GRAV_CONS = 6.67430*10**(1)
+camMoveSpeed = 10
+gridSize = int(WIDTH//7)
+BGCOLOR = (30,30,30)
+
 
 def backgroundDrawing():
     global gridSize
-    screen.fill((30,30,30))
+    screen.fill(BGCOLOR)
 
-    gridSize = int(WIDTH//7)
     for i in range(WIDTH//gridSize + 1):
         posX = i*gridSize + camXY[0] - gridSize * (camXY[0]//gridSize)
         PG.draw.line(screen, PG.Color(50,50,50), (posX, 0), (posX, HEIGHT), 1)
@@ -50,74 +51,155 @@ def spaceObjectDrawing():
     for obj in objectList:
         PG.draw.circle(screen, obj.color, obj.GetStepPos(TIMESTEP, camXY), int(obj.size))
 
-def sim():
-    for obj in objectList:
-        nPos = PG.Vector2(obj.simSteps[TIMESTEP].pos)
-        nVel = PG.Vector2()
-        nVel += obj.simSteps[-1].vel
+def step():
+    global TIMESTEP, camXY
+    sim()
+    if not (staticObj == None):
+        camXY[0] = WIDTH//2 - staticObj.simSteps[TIMESTEP].pos.x
+        camXY[1] = HEIGHT//2 - staticObj.simSteps[TIMESTEP].pos.y
 
-        for nObj in objectList:
-            if (obj != nObj):
-                m = obj.mass*nObj.mass
-                r = (obj.simSteps[TIMESTEP].pos - nObj.simSteps[TIMESTEP].pos).magnitude()
-                F = GRAV_CONS * (m)/(r**2)
+    TIMESTEP += 1
 
-                _dir = (obj.simSteps[TIMESTEP].pos - nObj.simSteps[TIMESTEP].pos).normalize()
+def sim(steps=1, reset=False):
+    if (not reset and len(objectList[0].simSteps) > TIMESTEP+1):
+        return
 
-                nVel -= (F/obj.mass)*_dir
-
-        nPos += obj.simSteps[TIMESTEP].vel
-
-        obj.simSteps.append(SO.simVars(nPos,nVel))
+    if (reset):
+        for obj in objectList:
+            obj.simSteps = [obj.simSteps[0]]
         
-popup = UI.ObjPopup()
+    for s in range(steps):
+        for obj in objectList:
+            nPos = PG.Vector2(obj.simSteps[-1].pos) + obj.simSteps[-1].vel
+
+            nVel = PG.Vector2()
+            nVel += obj.simSteps[-1].vel
+
+            for other in objectList:
+                if (obj != other):
+                    m = obj.mass*other.mass
+                    r = (obj.simSteps[-1].pos - other.simSteps[-1].pos).magnitude()
+                    F = GRAV_CONS * (m)/(r**2)
+
+                    _dir = (obj.simSteps[-1].pos - other.simSteps[-1].pos).normalize()
+
+                    nVel -= (F/obj.mass)*_dir
+
+            obj.simSteps.append(SO.simVars(nPos,nVel))
+
+
+arrowKeysPressed = [False,False,False,False] # UP DOWN LEFT RIGHT
+def arrowKeysHold(event):
+    global arrowKeysPressed
+    if not (POPUP):
+        if (event.type == PG.KEYUP):
+            if event.key == PG.K_UP:
+                arrowKeysPressed[0] = False
+            if event.key == PG.K_DOWN:
+                arrowKeysPressed[1] = False
+            if event.key == PG.K_LEFT:
+                arrowKeysPressed[2] = False
+            if event.key == PG.K_RIGHT:
+                arrowKeysPressed[3] = False
+            
+        if (event.type == PG.KEYDOWN):
+            if event.key == PG.K_UP:
+                arrowKeysPressed[0] = True
+            if event.key == PG.K_DOWN:
+                arrowKeysPressed[1] = True
+            if event.key == PG.K_LEFT:
+                arrowKeysPressed[2] = True
+            if event.key == PG.K_RIGHT:
+                arrowKeysPressed[3] = True
+
+def camMovement():
+    if (arrowKeysPressed[0]): camXY[1] += camMoveSpeed
+    if (arrowKeysPressed[1]): camXY[1] -= camMoveSpeed
+    if (arrowKeysPressed[2]): camXY[0] += camMoveSpeed
+    if (arrowKeysPressed[3]): camXY[0] -= camMoveSpeed
+
+def mouseClick(event):
+    global POPUP, POPUP_obj, PAUSED, TIMESTEP
+
+    if (event.type == PG.MOUSEBUTTONDOWN):
+        if (PG.mouse.get_pressed()[0]):
+            pos = PG.mouse.get_pos() - camXY
+                
+            if not (POPUP): 
+                TIMESTEP = 0
+                PAUSED = True
+
+                # Test for mouse over object hover
+                for obj in objectList: 
+                    if (obj.Contains(pos)):
+                        POPUP = True
+                        POPUP_obj = obj
+                        popup.inputs = []
+                        return
+                        
+                # Else add object to mouse pos
+                objectList.append(SO.Object(pos, [0,0], 1000))
+
+            else: 
+                # Test for click outside of popup
+                c = screen.get_at(PG.mouse.get_pos())
+                if (c == BGCOLOR):
+                    POPUP = False
+                    sim(500, True)
+
+        if (PG.mouse.get_pressed()[2] and not POPUP):
+            pos = PG.mouse.get_pos() - camXY
+            for obj in objectList: 
+                if (obj.Contains(pos)):
+                    objectList.remove(obj)
+                    return
+        
 
 while True:
+    # DRAW PHASE
     backgroundDrawing()
     spaceObjectDrawing()
-    # print(PG.mouse.get_pos())
+    for obj in objectList:
+        obj.DrawSimPath(screen, camXY, staticObj, WIDTH)
+    if (POPUP and PAUSED): popup.Draw(screen, POPUP_obj, camXY)
 
+    camMovement()
+
+    # PYGAME INPUT EVENTS
     for event in PG.event.get():
         if (event.type == PG.QUIT): sys.exit()
 
-        if event.type == PG.KEYUP:
-            if not POPUP:
-                if event.key == PG.K_a:
-                    PAUSED = True
-                    TIMESTEP = 0
-
-                    objectList.append(SO.Object((camXY.x+WIDTH//2,camXY.y+HEIGHT//2), [0,0], 200))
-                    objectList[0].SetColor(PG.Color(10,10,10))
-                    # objectList.append(SO.Object((camXY.x+WIDTH//2+200,camXY.y+HEIGHT//2+200), [0,-5], 800))
-                    # objectList.append(SO.Object((camXY.x+WIDTH//4,camXY.y+HEIGHT//4), [0,5], 200))
+        if event.type == PG.KEYUP: 
             if event.key == PG.K_p:
                 PAUSED = not PAUSED
-            if event.key == PG.K_s:
-                POPUP = not POPUP
-                popup.inputs = []
+            if (POPUP):
+                if event.key == PG.K_s:
+                    POPUP = False
+                    if (POPUP_obj.static):
+                        POPUP_obj.static = False
+                        staticObj = None
+                    else:
+                        for obj in objectList:
+                            obj.static = False
 
-            if not POPUP:
-                if event.key == PG.K_RIGHT:
-                    camXY[0] += 100
-                if event.key == PG.K_LEFT:
-                    camXY[0] -= 100
-                if event.key == PG.K_UP:
-                    camXY[1] -= 100
-                if event.key == PG.K_DOWN:
-                    camXY[1] += 100
+                        POPUP_obj.static = True
+                        staticObj = POPUP_obj
 
-        if (POPUP) and (PAUSED):
-            popup.event_handler(event)
+                        camXY[0] = WIDTH//2 - staticObj.startPosition[0]
+                        camXY[1] = HEIGHT//2 - staticObj.startPosition[1]
 
-    if (POPUP) and (PAUSED):
-        popup.draw(screen, objectList[0], camXY)
+        mouseClick(event)
+        arrowKeysHold(event)
 
+        if (POPUP and PAUSED):
+            popup.Event_handler(event)
+
+    # FRAMERATE, REDRAW, PHYSICS STEP
     if not (PAUSED):
         REALTIME += clock.get_time()/1000
-        if (REALTIME > 1/FPS):
+        if (REALTIME > 1/PFPS):
             REALTIME = 0
             step()
             
-    # FRAMERATE 60 and REDRAW
     PG.display.flip()
     clock.tick(60)
