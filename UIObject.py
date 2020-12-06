@@ -5,7 +5,7 @@ import pygame as PG
 class UI:
     def __init__(self):
         self.image = None
-        self.posOffset = None
+        self.posOffset = PG.Vector2()
 
         self.items = []
         self.itemPos = None
@@ -17,7 +17,8 @@ class UI:
     def Draw(self, screen, position):
         pos = PG.Vector2(position) + self.posOffset
 
-        # screen.blit(self.image, pos)
+        if (self.image != None):
+            screen.blit(self.image, pos)
 
         for index, t in enumerate(self.items):
             textSurface = self.FONT.render(t, True, PG.Color("white"))
@@ -27,10 +28,7 @@ class UI:
 class ObjPopup(UI):
     def __init__(self):
         super().__init__()
-        # self.image = PG.image.load("Images/popup.png")
-        # self.image = PG.transform.scale(self.image, (260, 275))
-        self.posOffset = PG.Vector2(-150,-275)
-        self.itemPos = PG.Vector2(40,30)
+        self.itemPos = PG.Vector2(40, -200)
         self.obj = None
 
         self.items = ["Object Values:",
@@ -40,16 +38,17 @@ class ObjPopup(UI):
                       "Y:",
                       "RGB Golor:"]
 
-    def Draw(self, screen, obj, offset):
+    def Draw(self, screen, obj):
         height = screen.get_height()
-        pos = (0,height) + offset
+        pos = (0, height)
         self.obj = obj
 
         if (self.inputs == []):
             self.SetupInput(pos + self.itemPos, self.obj)
 
-        r = PG.Rect(15,height-215,300,200)
+        r = PG.Rect(15,height-215,250,200)
         PG.draw.rect(screen, PG.Color(40,40,40), r, border_radius=10,border_top_right_radius=50)
+
         super().Draw(screen,pos)
 
         for inp in self.inputs:

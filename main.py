@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
+import copy
+import numpy as np
 import pygame as PG
 import sys
-import copy
 
 import SpaceObject as SO
 import UIObject as UI
-import World as W
 
 WIDTH = HEIGHT = 800 
-World = W.World(WIDTH//2, HEIGHT//2, (WIDTH,HEIGHT))
 
 PG.init()
 screen = PG.display.set_mode((WIDTH,HEIGHT))
@@ -25,7 +24,7 @@ PAUSED = True
 REALTIME = 0
 TIMESTEP = 0
 
-PHSXTIME = 0.1
+PHSXTIME = 0.025
 SIMSPEED = 1
 step_size = int(SIMSPEED / PHSXTIME)
 
@@ -62,8 +61,8 @@ def spaceObjectDrawing():
     for obj in objectList:
         pos = obj.GetStepPos(TIMESTEP, camXY)
         if (SELECTED == obj):
-            PG.draw.circle(screen, PG.Color(100,100,100), pos, int(obj.size*camZOOM)+20, 1)
-        PG.draw.circle(screen, obj.color, pos, int(obj.size*camZOOM))
+            PG.draw.circle(screen, PG.Color(100,100,100), pos, int(obj.size*1/camZOOM)+20, 1)
+        PG.draw.circle(screen, obj.color, pos, int(obj.size*1/camZOOM))
 
 def step():
     global TIMESTEP, camXY
@@ -129,36 +128,21 @@ def camMovement():
 
 def mouseWheel(event):
     if (event.type == PG.MOUSEBUTTONDOWN):
-        pos = PG.Vector2(WIDTH//2, HEIGHT//2)
-
         if (event.button == 5): # scrool down
-            camZooming(PG.mouse.get_pos(), -1)
-            # camZooming(pos, -1)
+            camZooming(0.1)
         if (event.button == 4): # scrool up
-            camZooming(PG.mouse.get_pos(), 1)
-            # camZooming(pos, 1)
-    
-def camZooming(pos, zoom):
-    global camZOOM, camXY
-    zoomSpeed = 0.05
+            camZooming(-0.1)
 
-    if ((0.5 < camZOOM and zoom < 0) or (2 > camZOOM and zoom > 0)):
-        camZOOM = round(camZOOM + zoom*zoomSpeed, 2)
-    else:
-        return
+def camZooming(zoom):
+    global camXY, camZOOM
+    oldzoom = copy.copy(camZOOM)
+    camZOOM += zoom
+
+    # camXY -= (PG.Vector2(WIDTH/2, HEIGHT/2) - PG.mouse.get_pos()) * camZOOM
+    # solve how to move well
 
     for obj in objectList:
-        sub = (obj.origPos + camXY - pos)
-
-        _dir = sub.normalize()
-        dist = sub.magnitude()
-
-        obj.sPos += _dir*dist*zoomSpeed*zoom
-        if (len(objectList) == 1):
-            obj.origPos = copy.copy(obj.sPos)
-            
-        obj.ResetSteps()
-
+        obj.ChangeCoordinates(oldzoom, camZOOM)
 
 def mouseClick(event):
     global SELECTED, PAUSED, TIMESTEP
@@ -172,7 +156,6 @@ def mouseClick(event):
                 if (obj.Contains(pos, camZOOM)):
                     SELECTED = obj
                     popup.inputs = []
-
                     return
 
             TIMESTEP = 0
@@ -187,8 +170,6 @@ def mouseClick(event):
                 c = screen.get_at(PG.mouse.get_pos())
                 if (c == BGCOLOR):
                     SELECTED = None
-                        
-                    sim(500, True)
 
         if (PG.mouse.get_pressed()[2] and not SELECTED):
             pos = PG.mouse.get_pos() - camXY
@@ -204,11 +185,9 @@ while True:
     for obj in objectList:
         obj.DrawSimPath(screen, camXY, staticObj, WIDTH)
 
-    if (SELECTED and PAUSED): popup.Draw(screen, SELECTED, camXY)
+    if (SELECTED and PAUSED): popup.Draw(screen, SELECTED)
 
     camMovement()
-
-    # PG.draw.line(screen, PG.Color("red"), PG.Vector2(HEIGHT//2,HEIGHT//2), PG.Vector2(HEIGHT//2,HEIGHT//2)-camXY)
 
     # PYGAME INPUT EVENTS
     for event in PG.event.get():
@@ -218,22 +197,6 @@ while True:
                 
             if event.key == PG.K_p:
                 PAUSED = not PAUSED
-            # if (POPUP): STATICBODY
-            #     if event.key == PG.K_s:
-            #         POPUP = False
-            #         if (POPUP_obj.static):
-            #             POPUP_obj.static = False
-            #             staticObj = None
-            #         else:
-            #             for obj in objectList:
-            #                 obj.static = False
-
-            #             POPUP_obj.static = True
-            #             staticObj = POPUP_obj
-
-            #             camXY[0] = WIDTH//2 - staticObj.startPosition[0]
-            #             camXY[1] = HEIGHT//2 - staticObj.startPosition[1]
-
 
         mouseClick(event)
         WSADmoveKeys(event)
@@ -242,7 +205,9 @@ while True:
         if (SELECTED and PAUSED):
             popup.Event_handler(event)
 
-
+    if (PAUSED):
+        sim(5000, True)
+        
     # FRAMERATE, REDRAW, PHYSICS STEP
     if not (PAUSED):
         REALTIME += clock.get_time()/1000
