@@ -65,6 +65,7 @@ class ObjPopup(UI):
                        InputField(x+50, y+150,45,23,str(obj.color[1]),5,"g"),
                        InputField(x+100,y+150,45,23,str(obj.color[2]),5,"b")]
 
+
     def Event_handler(self, event):
         for inp in self.inputs:
             if event.type == PG.MOUSEBUTTONDOWN:

@@ -39,45 +39,34 @@ popup = UI.ObjPopup()
 #CONSTANTS
 FPS = 30 
 GRAV_CONS = 6.67430*10**(1)
-camMoveSpeed = 10
+camMoveSpeed = 15
 gridSize = int(WIDTH//7)
 BGCOLOR = (10,10,10)
-
 
 def backgroundDrawing():
     global gridSize
     screen.fill(BGCOLOR)
 
-    ## BACKGROUND LINES
-    # for i in range(WIDTH//gridSize + 1):
-    #     posX = i*gridSize + camXY[0] - gridSize * (camXY[0]//gridSize)
-    #     PG.draw.line(screen, PG.Color(50,50,50), (posX, 0), (posX, HEIGHT), 1)
-
-    # for i in range(HEIGHT//gridSize + 1):
-    #     posY = i*gridSize + camXY[1] - gridSize * (camXY[1]//gridSize)
-    #     PG.draw.line(screen, PG.Color(50,50,50), (0, posY), (WIDTH, posY), 1)
-
 def spaceObjectDrawing():
     for obj in objectList:
         pos = obj.GetStepPos(TIMESTEP, camXY)
         if (SELECTED == obj):
-            PG.draw.circle(screen, PG.Color(100,100,100), pos, int(obj.size*1/camZOOM)+20, 1)
-        PG.draw.circle(screen, obj.color, pos, int(obj.size*1/camZOOM))
+            PG.draw.circle(screen, PG.Color(100,100,100), pos, int(obj.size/camZOOM)+10, 1)
+        PG.draw.circle(screen, obj.color, pos, int(obj.size/camZOOM))
 
 def step():
-    global TIMESTEP, camXY
+    global TIMESTEP
     sim(step_size)
 
     TIMESTEP += step_size
 
 def sim(steps=1, reset=False):
     if (reset or TIMESTEP == 0):
-        for obj in objectList:
-            obj.simSteps = [obj.simSteps[0]]
+        for obj in objectList: obj.ResetSteps()
         
     for s in range(steps):
         for obj in objectList:
-            nPos = PG.Vector2(obj.simSteps[-1].pos) + obj.simSteps[-1].vel * PHSXTIME
+            nPos = PG.Vector2(obj.simSteps[-1].pos) + (obj.simSteps[-1].vel * PHSXTIME)/camZOOM
 
             nVel = PG.Vector2()
             nVel += obj.simSteps[-1].vel
@@ -85,14 +74,14 @@ def sim(steps=1, reset=False):
             for other in objectList:
                 if (obj != other):
                     m = obj.mass*other.mass
-                    r = (obj.simSteps[-1].pos - other.simSteps[-1].pos).magnitude()
+                    r = ((obj.simSteps[-1].pos - other.simSteps[-1].pos)*camZOOM).magnitude()
                     F = GRAV_CONS * (m)/(r**2)
 
-                    _dir = (obj.simSteps[-1].pos - other.simSteps[-1].pos).normalize() 
+                    _dir = (obj.simSteps[-1].pos - other.simSteps[-1].pos).normalize()
 
                     accel = _dir * (F/obj.mass)
 
-                    nVel -= accel * PHSXTIME
+                    nVel -= (accel * PHSXTIME)
 
             obj.simSteps.append(SO.simVars(nPos,nVel))
 
@@ -144,6 +133,10 @@ def camZooming(zoom):
     for obj in objectList:
         obj.ChangeCoordinates(oldzoom, camZOOM)
 
+    v1 = objectList[0].sPos
+    v2 = objectList[1].sPos
+    print(camZOOM, ((v1-v2)*camZOOM).magnitude())
+
 def mouseClick(event):
     global SELECTED, PAUSED, TIMESTEP
 
@@ -187,15 +180,12 @@ while True:
 
     if (SELECTED and PAUSED): popup.Draw(screen, SELECTED)
 
-    camMovement()
-
     # PYGAME INPUT EVENTS
+    camMovement()
     for event in PG.event.get():
         if (event.type == PG.QUIT): sys.exit()
-
-        if event.type == PG.KEYUP: 
-                
-            if event.key == PG.K_p:
+        if (event.type == PG.KEYDOWN): 
+            if (event.key == PG.K_SPACE):
                 PAUSED = not PAUSED
 
         mouseClick(event)

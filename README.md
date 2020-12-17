@@ -10,6 +10,7 @@ Projekt, vytvořit app v Pythonu s nějakou lib (asi pygame), kde si uživatel b
   - vlastnosti = rychlost, hmotnost
 * [x] simulace gravitačních sil
   - uvidíme jaká bude třeba optimalizace (*očekávám že moc ne*)
-* [ ] vizualizace průběhu simulace
-  - * [ ] zpětná - ukázat, kudy se pohybovaly
-  - * [ ] budoucí - vhodné pro určení vlastností objektů (*ukázat jak se bude trajektorie vyvíjet v závislosti na vlastnostech objektu*)  
+* [x] vizualizace průběhu simulace
+  - * [x] zpětná - ukázat, kudy se pohybovaly
+  - * [x] budoucí - vhodné pro určení vlastností objektů (*ukázat jak se bude trajektorie vyvíjet v závislosti na vlastnostech objektu*)  
+  - * [ ] static na jeden objekt aby se vše pohybovalo kolem něho
