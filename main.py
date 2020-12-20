@@ -127,15 +127,10 @@ def camZooming(zoom):
     oldzoom = copy.copy(camZOOM)
     camZOOM += zoom
 
-    # camXY -= (PG.Vector2(WIDTH/2, HEIGHT/2) - PG.mouse.get_pos()) * camZOOM
     # solve how to move well
 
     for obj in objectList:
         obj.ChangeCoordinates(oldzoom, camZOOM)
-
-    v1 = objectList[0].sPos
-    v2 = objectList[1].sPos
-    print(camZOOM, ((v1-v2)*camZOOM).magnitude())
 
 def mouseClick(event):
     global SELECTED, PAUSED, TIMESTEP
@@ -174,9 +169,12 @@ def mouseClick(event):
 while True:
     # DRAW PHASE
     backgroundDrawing()
+
+    if (PAUSED):
+        for obj in objectList:
+            obj.DrawSimPath(screen, camXY, objectList)
+
     spaceObjectDrawing()
-    for obj in objectList:
-        obj.DrawSimPath(screen, camXY, staticObj, WIDTH)
 
     if (SELECTED and PAUSED): popup.Draw(screen, SELECTED)
 
@@ -187,6 +185,7 @@ while True:
         if (event.type == PG.KEYDOWN): 
             if (event.key == PG.K_SPACE):
                 PAUSED = not PAUSED
+                SELECTED = None
 
         mouseClick(event)
         WSADmoveKeys(event)

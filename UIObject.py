@@ -58,23 +58,58 @@ class ObjPopup(UI):
         x = pos.x
         y = pos.y
 
-        self.inputs = [InputField(x+100,  y+25,80,23,str(obj.mass),5,"mass"),
-                       InputField(x+100,  y+75,80,23,str(obj.simSteps[0].vel.x),5,"xvel"),
-                       InputField(x+100, y+100,80,23,str(obj.simSteps[0].vel.y),5,"yvel"),
-                       InputField(x,    y+150,45,23,str(obj.color[0]),5,"r"),
-                       InputField(x+50, y+150,45,23,str(obj.color[1]),5,"g"),
-                       InputField(x+100,y+150,45,23,str(obj.color[2]),5,"b")]
+        self.inputs = [InputField(x+100,  y+25,80,23,str(obj.mass),5,"mass",1,-1,0),
+                       InputField(x+100,  y+75,80,23,str(obj.simSteps[0].vel.x),5,"xvel",-1,-1,1),
+                       InputField(x+100, y+100,80,23,str(obj.simSteps[0].vel.y),5,"yvel",-1,-1,1),
+                       InputField(x,    y+150,45,23,str(obj.color[0]),5,"r",0,255,0),
+                       InputField(x+50, y+150,45,23,str(obj.color[1]),5,"g",0,255,0),
+                       InputField(x+100,y+150,45,23,str(obj.color[2]),5,"b",0,255,0)]
 
 
     def Event_handler(self, event):
         for inp in self.inputs:
-            if event.type == PG.MOUSEBUTTONDOWN:
-                if inp.field.collidepoint(event.pos):
+            if (event.type == PG.MOUSEBUTTONUP): # Selecting input - write
+                inp.selected = False
+                inp.drag = False
+
+                if (inp.field.collidepoint(event.pos)):
                     inp.selected = True
                     inp.cursor = 0
                     for other in self.inputs:
                         if not (other == inp):
                             other.selected = False
+                            other.SetText(other.text)
+
+
+            if(PG.mouse.get_pressed()[0]): # Continuous mouse press - drag
+                mousePos = PG.Vector2(PG.mouse.get_pos())
+                if not (inp.drag):
+                    if (inp.field.collidepoint(mousePos)):
+                        inp.drag = True
+                        inp.selected = False
+                        inp.dragOrig = mousePos
+                        inp.dragOrigValue = float(inp.text)
+                else:
+                    if (inp.pointer == "mass"):
+                        value = (inp.dragOrigValue + ((mousePos - inp.dragOrig).x))
+                    elif (inp.pointer == "r" or inp.pointer == "g" or inp.pointer == "b"):
+                        value = (inp.dragOrigValue + ((mousePos - inp.dragOrig).x)/5)
+                    elif (inp.pointer == "xvel" or inp.pointer == "yvel"):
+                        value = (inp.dragOrigValue + ((mousePos - inp.dragOrig).x)/10)
+
+                    inp.SetText(value)
+
+                    r = self.obj.color[0]
+                    g = self.obj.color[1]
+                    b = self.obj.color[2]
+                    if (inp.pointer == "mass"):   self.obj.SetMass(float(inp.text))
+                    elif (inp.pointer == "xvel"): self.obj.simSteps[0].vel.x = float(inp.text)
+                    elif (inp.pointer == "yvel"): self.obj.simSteps[0].vel.y = float(inp.text)
+                    elif (inp.pointer == "r"):    r = int(inp.text)
+                    elif (inp.pointer == "g"):    g = int(inp.text)
+                    elif (inp.pointer == "b"):    b = int(inp.text)
+
+                    self.obj.SetColor(PG.Color(r,g,b))
 
             if (inp.selected): # Handle events for selected input
                 if event.type == PG.KEYDOWN:
@@ -86,18 +121,20 @@ class ObjPopup(UI):
 
                     # BACKSPACE, DELETE, ENTER (apply input and deselect)
                     if (event.key == PG.K_BACKSPACE): 
-                        inp.text = inp.text[:len(inp.text)-inp.cursor-1] + inp.text[len(inp.text)-inp.cursor:]
+                        text = inp.text[:len(inp.text)-inp.cursor-1] + inp.text[len(inp.text)-inp.cursor:]
+                        inp.text = text
+                        # inp.SetText(text)
                     elif (event.key == PG.K_DELETE):
-                        inp.text = inp.text[:len(inp.text)-inp.cursor] + inp.text[len(inp.text)-inp.cursor+1:]
+                        text = inp.text[:len(inp.text)-inp.cursor] + inp.text[len(inp.text)-inp.cursor+1:]
+                        # inp.SetText(text)
+                        inp.text = text
                         inp.cursor -= 1
                     elif (event.key == PG.K_RETURN): 
                         inp.selected = False
                         if (inp.text == ""):
-                            if (inp.pointer == "mass"): inp.text = "1"
-                            else: inp.text = "0"
+                            inp.SetText(0)
                         else:
-                            try: inp.text = str(int(inp.text))
-                            except ValueError: inp.text = str(float(inp.text))
+                            inp.SetText(inp.text)
 
                     # ARROW KEYS - moving cursor around
                     elif (event.key == PG.K_LEFT):
@@ -107,9 +144,11 @@ class ObjPopup(UI):
                         inp.cursor -= 1
                         if (inp.cursor < 0): inp.cursor = 0
 
+                    # TAB - changing selected
                     elif (event.key == PG.K_TAB):
                         idx = self.inputs.index(inp) 
                         inp.selected = False
+                        inp.SetText(inp.text)
 
                         if (PG.key.get_mods() & PG.KMOD_SHIFT):
                             idx -= 1
@@ -128,56 +167,46 @@ class ObjPopup(UI):
                     # ALLOWED KEYS
                     elif (str(key) in "0123456789-."):
                         if (key == "-"):
-                            inp.text = "-"+inp.text
+                            inp.SetText("-"+inp.text)
                             if (len(inp.text) > 1):
                                 if (inp.text[0] == inp.text[1] == "-"):
                                     print("1")
-                                    inp.text = inp.text[2:]
+                                    inp.SetText(inp.text[2:])
                                 
                         else:
-                            inp.text = inp.text[:len(inp.text)-inp.cursor] + str(key) + inp.text[len(inp.text)-inp.cursor:]
+                            text = inp.text[:len(inp.text)-inp.cursor] + str(key) + inp.text[len(inp.text)-inp.cursor:]
+                            inp.SetText(text)
 
                     # Final text2variable assign - value checks 
+                    if (inp.text == ""):
+                        inp.text = "0"
+                        inp.SetText(inp.text)
+                        
                     if (inp.pointer == "mass"): 
-                        try: M = int(inp.text) 
-                        except ValueError: M = 1
-                        self.obj.SetMass(M)
+                        self.obj.SetMass(int(inp.text))
                     if (inp.pointer == "xvel"): 
-                        try: X = float(inp.text) 
-                        except ValueError: X = 0
-                        self.obj.simSteps[0].vel.x = X
+                        self.obj.simSteps[0].vel.x = float(inp.text)
                     if (inp.pointer == "yvel"): 
-                        try: Y = float(inp.text) 
-                        except ValueError: Y = 0
-                        self.obj.simSteps[0].vel.y = Y
+                        self.obj.simSteps[0].vel.y = float(inp.text)
 
                     r = self.obj.color[0]
                     g = self.obj.color[1]
                     b = self.obj.color[2]
                     if (inp.pointer == "r"): 
-                        try: int(inp.text)
-                        except ValueError: inp.text = 0 
-                        if (int(inp.text) > 255 or int(inp.text) < 0): pass
-                        else: r = int(inp.text) 
-                        inp.text = str(r)
+                        r = int(inp.text)
+                        inp.SetText(inp.text)
                     if (inp.pointer == "g"):
-                        try: int(inp.text)
-                        except ValueError: inp.text = 0 
-                        if (int(inp.text) > 255 or int(inp.text) < 0): pass
-                        else: g = int(inp.text) 
-                        inp.text = str(g)
+                        g = int(inp.text)
+                        inp.SetText(inp.text)
                     if (inp.pointer == "b"):
-                        try: int(inp.text)
-                        except ValueError: inp.text = 0 
-                        if (int(inp.text) > 255 or int(inp.text) < 0): pass
-                        else: b = int(inp.text) 
-                        inp.text = str(b)
+                        g = int(inp.text)
+                        inp.SetText(inp.text)
                     
                     self.obj.SetColor(PG.Color(r,g,b))
 
 
 class InputField:
-    def __init__(self, x,y,width,height,text="",xalign=0,pointer=""):
+    def __init__(self, x,y,width,height,text="",xalign=0,pointer="",minValue=-1,maxValue=-1,decimal=0):
         self.field = PG.Rect(x,y,width,height)
         self.text = text
         self.fText = text
@@ -189,8 +218,15 @@ class InputField:
         self.SELECTED_COLOR = PG.Color("white")
         self.DESELECTED_COLOR = PG.Color("gray")
         self.selected = False
+        self.drag = False
+        self.dragOrig = None
+        self.dragOrigValue = None
         self.color = self.DESELECTED_COLOR
         self.bgcolor = PG.Color(90,90,90)
+
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.decimal = str(decimal)
 
         self.textSurface = self.FONT.render(self.text, True, self.color)
 
@@ -208,3 +244,15 @@ class InputField:
             
         PG.draw.rect(screen, self.bgcolor, self.field)
         screen.blit(self.textSurface, (self.field.x+self.xalign,self.field.y))
+
+    def SetText(self, text):
+        if (text == ""):
+            value = 0
+            
+        value = float(text)
+        if (self.minValue > value and self.minValue != -1):
+            value = self.minValue
+        if (self.maxValue < value and self.maxValue != -1):
+            value = self.maxValue
+
+        self.text = ("{:0."+self.decimal+"f}").format(value)

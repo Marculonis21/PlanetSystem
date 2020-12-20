@@ -14,8 +14,8 @@ inoremap <expr> <C-J> pumvisible() ? "\" : "\	"
 inoremap <silent> <expr> <Nul> coc#refresh()
 inoremap <C-N> :nohl
 inoremap <C-Y> :update
-nmap  h
 xmap  h
+nmap  h
 snoremap <silent>  "_c
 omap  h
 xnoremap <silent> 	 :call UltiSnips#SaveLastVisualSelection()gvs
@@ -31,18 +31,30 @@ snoremap  "_c
 nnoremap  :update
 vnoremap  :update
 onoremap  :update
-vnoremap ,s :sort
-map ,c :tabclose
-map ,o :tabedit
-map ,m :tabnext
-map ,n :tabprevious
+xnoremap ,s :sort
+nnoremap ,a zM
+nnoremap ,A zR
+nnoremap ,f zC
+nnoremap ,F zO
+nmap ,c :tabclose
+xmap ,c :tabclose
+omap ,c :tabclose
+nmap ,o :tabedit
+xmap ,o :tabedit
+omap ,o :tabedit
+nmap ,m :tabnext
+xmap ,m :tabnext
+omap ,m :tabnext
+nmap ,n :tabprevious
+xmap ,n :tabprevious
+omap ,n :tabprevious
 vnoremap < <gv  " better indentation
-vnoremap > >gv  " better indentation
+xnoremap > >gv  " better indentation
 xmap S <Plug>VSurround
 nmap cS <Plug>CSurround
 nmap cs <Plug>Csurround
 nmap ds <Plug>Dsurround
-vmap gx <Plug>NetrwBrowseXVis
+xmap gx <Plug>NetrwBrowseXVis
 nmap gx <Plug>NetrwBrowseX
 xmap gS <Plug>VgSurround
 nmap gcu <Plug>Commentary<Plug>Commentary
@@ -55,10 +67,10 @@ nmap ySs <Plug>YSsurround
 nmap yss <Plug>Yssurround
 nmap yS <Plug>YSurround
 nmap ys <Plug>Ysurround
-nnoremap <C-N> :nohl
-nmap <C-H> h
-xmap <C-H> h
 nnoremap <C-Y> :update
+xmap <C-H> h
+nmap <C-H> h
+nnoremap <C-N> :nohl
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))
 snoremap <C-R> "_c
@@ -142,7 +154,7 @@ set incsearch
 set laststatus=2
 set nomodeline
 set mouse=a
-set operatorfunc=<SNR>21_go
+set operatorfunc=<SNR>22_go
 set pastetoggle=<F2>
 set printoptions=paper:a4
 set ruler
@@ -176,6 +188,7 @@ endif
 set shortmess=aoO
 argglobal
 %argdel
+$argadd main.py
 set stal=2
 tabnew
 tabnew
@@ -194,7 +207,7 @@ let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
 imap <buffer> <Nul> <C-Space>
-vnoremap <buffer> ,r :call jedi#rename_visual()
+xnoremap <buffer> ,r :call jedi#rename_visual()
 nnoremap <buffer> ,r :call jedi#rename()
 nnoremap <buffer> ,z :call jedi#usages()
 nnoremap <buffer> ,s :call jedi#goto_stubs()
@@ -250,9 +263,11 @@ setlocal foldcolumn=0
 setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
+set foldlevel=99
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
+set foldmethod=indent
+setlocal foldmethod=indent
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -334,13 +349,68 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 102 - ((0 * winheight(0) + 25) / 51)
+91
+normal! zo
+93
+normal! zo
+94
+normal! zo
+96
+normal! zo
+98
+normal! zo
+100
+normal! zo
+103
+normal! zo
+104
+normal! zo
+106
+normal! zo
+108
+normal! zo
+110
+normal! zo
+91
+normal! zc
+119
+normal! zo
+120
+normal! zo
+121
+normal! zo
+123
+normal! zo
+119
+normal! zc
+136
+normal! zo
+139
+normal! zo
+140
+normal! zo
+144
+normal! zo
+145
+normal! zo
+154
+normal! zo
+158
+normal! zo
+160
+normal! zo
+163
+normal! zo
+165
+normal! zo
+166
+normal! zo
+let s:l = 139 - ((50 * winheight(0) + 25) / 50)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-102
-normal! 0
+139
+normal! 013|
 tabnext
 edit SpaceObject.py
 set splitbelow splitright
@@ -355,7 +425,7 @@ let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
 imap <buffer> <Nul> <C-Space>
-vnoremap <buffer> ,r :call jedi#rename_visual()
+xnoremap <buffer> ,r :call jedi#rename_visual()
 nnoremap <buffer> ,r :call jedi#rename()
 nnoremap <buffer> ,z :call jedi#usages()
 nnoremap <buffer> ,s :call jedi#goto_stubs()
@@ -411,9 +481,11 @@ setlocal foldcolumn=0
 setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
-setlocal foldlevel=0
+set foldlevel=99
+setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
+set foldmethod=indent
+setlocal foldmethod=indent
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -495,13 +567,26 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 25) / 51)
+10
+normal! zo
+11
+normal! zo
+55
+normal! zo
+61
+normal! zo
+74
+normal! zo
+75
+normal! zo
+78
+normal! zo
+let s:l = 66 - ((49 * winheight(0) + 25) / 50)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 022|
+66
+normal! 048|
 tabnext
 edit UIObject.py
 set splitbelow splitright
@@ -516,7 +601,7 @@ let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
 imap <buffer> <Nul> <C-Space>
-vnoremap <buffer> ,r :call jedi#rename_visual()
+xnoremap <buffer> ,r :call jedi#rename_visual()
 nnoremap <buffer> ,r :call jedi#rename()
 nnoremap <buffer> ,z :call jedi#usages()
 nnoremap <buffer> ,s :call jedi#goto_stubs()
@@ -572,9 +657,11 @@ setlocal foldcolumn=0
 setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
-setlocal foldlevel=0
+set foldlevel=99
+setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
+set foldmethod=indent
+setlocal foldmethod=indent
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -656,12 +743,31 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 25) / 51)
+29
+normal! zo
+70
+normal! zo
+71
+normal! zo
+77
+normal! zo
+84
+normal! zo
+86
+normal! zo
+91
+normal! zo
+100
+normal! zo
+102
+normal! zo
+197
+normal! zo
+let s:l = 95 - ((24 * winheight(0) + 25) / 50)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+95
 normal! 0
 tabnext
 edit README.md
@@ -717,9 +823,11 @@ setlocal foldcolumn=0
 setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
-setlocal foldlevel=0
+set foldlevel=99
+setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
+set foldmethod=indent
+setlocal foldmethod=indent
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -801,8 +909,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 25) / 51)
+let s:l = 1 - ((0 * winheight(0) + 25) / 50)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -812,9 +919,9 @@ tabnext 3
 set stal=1
 badd +0 main.py
 badd +1 SpaceObject.py
-badd +26 World.py
 badd +1 UIObject.py
 badd +1 README.md
+badd +1 World.py
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif

@@ -13,7 +13,7 @@ class Object:
 
         self.mass = mass
 
-        self.size = mass**(MASS2SIZE) + 20
+        self.size = mass**(MASS2SIZE) + 10
         self.color = PG.Color(random.randint(0,255),
                               random.randint(0,255),
                               random.randint(0,255))
@@ -38,7 +38,6 @@ class Object:
         self.sPos = PG.Vector2(x[0],x[1])
         self.ResetSteps()
 
-
     def SetMass(self, mass):
         oldmass = self.mass
 
@@ -52,7 +51,7 @@ class Object:
         pos = self.simSteps[idx].pos + translate 
         return (int(pos.x),int(pos.y))
 
-    def DrawSimPath(self, screen, offset, static, w):
+    def DrawSimPath(self, screen, offset, others):
         if (len(self.simSteps) > 5000):
             s = len(self.simSteps) - 4999
         else:
@@ -64,11 +63,27 @@ class Object:
 
             PG.draw.line(screen, self.color, p1, p2, 2)
 
+            colPos = self.Collides(step, others)
+            if (colPos != None):
+                PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size)
+                break
+
     def Contains(self, pos, camZOOM):
         if ((self.sPos - pos).magnitude() <= self.size*camZOOM): return True
+
+    def Collides(self, TIMESTEP, others):
+        _pos = PG.Vector2(self.GetStepPos(TIMESTEP,PG.Vector2()))
+
+        for obj in others:
+            if (obj == self):
+                continue
+            
+            _other = PG.Vector2(obj.GetStepPos(TIMESTEP, PG.Vector2()))
+            if ((_other - _pos).magnitude() < obj.size + self.size):
+                return _pos
+                
 
 class simVars:
     def __init__(self, position=PG.Vector2(), velocity=PG.Vector2()):
         self.pos = PG.Vector2(position)
         self.vel = PG.Vector2(velocity)
-        
