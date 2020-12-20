@@ -19,7 +19,6 @@ class Object:
                               random.randint(0,255))
 
         self.simSteps = [simVars(self.sPos, self.sVel)]
-        self.static = False
 
     def ResetSteps(self):    
         self.simSteps = [simVars(self.sPos, self.simSteps[0].vel)]
@@ -39,10 +38,13 @@ class Object:
         self.ResetSteps()
 
     def SetMass(self, mass):
+        if (mass <= 0):
+            mass = 1
+            
         oldmass = self.mass
 
         self.mass = mass
-        self.size = mass**(MASS2SIZE) + 20
+        self.size = mass**(MASS2SIZE) + 10
 
     def SetColor(self, color):
         self.color = PG.Color(color[0],color[1],color[2])
@@ -51,7 +53,7 @@ class Object:
         pos = self.simSteps[idx].pos + translate 
         return (int(pos.x),int(pos.y))
 
-    def DrawSimPath(self, screen, offset, others):
+    def DrawSimPath(self, screen, offset, zoom, others):
         if (len(self.simSteps) > 5000):
             s = len(self.simSteps) - 4999
         else:
@@ -63,23 +65,23 @@ class Object:
 
             PG.draw.line(screen, self.color, p1, p2, 2)
 
-            colPos = self.Collides(step, others)
+            colPos = self.Collides(step, others, zoom)
             if (colPos != None):
-                PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size)
+                PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size/zoom)
                 break
 
-    def Contains(self, pos, camZOOM):
-        if ((self.sPos - pos).magnitude() <= self.size*camZOOM): return True
+    def Contains(self, pos, zoom):
+        if ((self.sPos - pos).magnitude() <= self.size*zoom): return True
 
-    def Collides(self, TIMESTEP, others):
+    def Collides(self, TIMESTEP, others, zoom):
         _pos = PG.Vector2(self.GetStepPos(TIMESTEP,PG.Vector2()))
 
         for obj in others:
             if (obj == self):
                 continue
             
-            _other = PG.Vector2(obj.GetStepPos(TIMESTEP, PG.Vector2()))
-            if ((_other - _pos).magnitude() < obj.size + self.size):
+            _otherPos = PG.Vector2(obj.GetStepPos(TIMESTEP, PG.Vector2()))
+            if ((_otherPos - _pos).magnitude() < (self.size/zoom) + (obj.size/zoom)):
                 return _pos
                 
 

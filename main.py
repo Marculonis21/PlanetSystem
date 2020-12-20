@@ -24,7 +24,7 @@ PAUSED = True
 REALTIME = 0
 TIMESTEP = 0
 
-PHSXTIME = 0.025
+PHSXTIME = 0.005
 SIMSPEED = 1
 step_size = int(SIMSPEED / PHSXTIME)
 
@@ -170,9 +170,12 @@ while True:
     # DRAW PHASE
     backgroundDrawing()
 
+    # Problémy, simuluju a kreslím každé kolo, i když není potřeba = PAIN
+    if (PAUSED and TIMESTEP == 0):
+        sim(5000, True)
     if (PAUSED):
         for obj in objectList:
-            obj.DrawSimPath(screen, camXY, objectList)
+            obj.DrawSimPath(screen, camXY, camZOOM, objectList)
 
     spaceObjectDrawing()
 
@@ -194,8 +197,6 @@ while True:
         if (SELECTED and PAUSED):
             popup.Event_handler(event)
 
-    if (PAUSED):
-        sim(5000, True)
         
     # FRAMERATE, REDRAW, PHYSICS STEP
     if not (PAUSED):
