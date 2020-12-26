@@ -54,8 +54,8 @@ class Object:
         return (int(pos.x),int(pos.y))
 
     def DrawSimPath(self, screen, offset, zoom, others):
-        if (len(self.simSteps) > 5000):
-            s = len(self.simSteps) - 4999
+        if (len(self.simSteps) > 10000):
+            s = len(self.simSteps) - 9999
         else:
             s = 1
             

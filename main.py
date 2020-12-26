@@ -172,7 +172,7 @@ while True:
 
     # Problémy, simuluju a kreslím každé kolo, i když není potřeba = PAIN
     if (PAUSED and TIMESTEP == 0):
-        sim(5000, True)
+        sim(10000, True)
     if (PAUSED):
         for obj in objectList:
             obj.DrawSimPath(screen, camXY, camZOOM, objectList)
