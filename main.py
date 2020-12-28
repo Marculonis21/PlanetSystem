@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import copy
+import sys
+
 import numpy as np
 import pygame as PG
-import sys
 
 import SpaceObject as SO
 import UIObject as UI

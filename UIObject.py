@@ -107,6 +107,7 @@ class ObjPopup(UI):
                 # Start drag on input under held cursor
                 if not (dragging):
                     if (inp.field.collidepoint(self.dragStart)):
+                        inp.SetText(inp.text)
                         inp.drag = True
                         inp.selected = True
                         inp.dragOrigPos = self.dragStart
@@ -290,10 +291,11 @@ class InputField:
         screen.blit(self.textSurface, (self.field.x+self.xalign,self.field.y))
 
     def SetText(self, text):
-        if (text == ""):
+        if (text == ''):
             value = 0
             
-        value = float(text)
+        else: value = float(text)
+            
         if (self.minValue > value and self.minValue != -1):
             value = self.minValue
         if (self.maxValue < value and self.maxValue != -1):

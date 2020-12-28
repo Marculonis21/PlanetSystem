@@ -24,7 +24,6 @@ class Object:
         self.simSteps = [simVars(self.sPos, self.simSteps[0].vel)]
 
     def ChangeCoordinates(self, b1, b2): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
-        # from old to kanon base
         u = (self.sPos.x * PG.Vector2(b1,0) + 
              self.sPos.y * PG.Vector2(0,b1))
 
@@ -59,11 +58,13 @@ class Object:
         else:
             s = 1
             
-        for step in range(s, len(self.simSteps)):
+        # for step in range(s, len(self.simSteps)):
+        for step in range(s, len(self.simSteps), len(self.simSteps)//100):
             p1 = self.simSteps[step].pos+offset
-            p2 = self.simSteps[step-1].pos+offset
+            # p2 = self.simSteps[step-1].pos+offset
+            # PG.draw.line(screen, self.color, p1, p2, 2)
 
-            PG.draw.line(screen, self.color, p1, p2, 2)
+            PG.draw.circle(screen, self.color, p1, 2)
 
             colPos = self.Collides(step, others, zoom)
             if (colPos != None):

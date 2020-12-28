@@ -14,47 +14,39 @@ inoremap <expr> <C-J> pumvisible() ? "\" : "\	"
 inoremap <silent> <expr> <Nul> coc#refresh()
 inoremap <C-N> :nohl
 inoremap <C-Y> :update
-xmap  h
-nmap  h
 snoremap <silent>  "_c
+nmap  h
+xmap  h
 omap  h
 xnoremap <silent> 	 :call UltiSnips#SaveLastVisualSelection()gvs
 snoremap <silent> 	 :call UltiSnips#ExpandSnippetOrJump()
 map <NL> j
 map  k
 map  l
-nnoremap  :nohl
 vnoremap  :nohl
+nnoremap  :nohl
 onoremap  :nohl
 map  :NERDTreeToggle
 snoremap  "_c
-nnoremap  :update
 vnoremap  :update
+nnoremap  :update
 onoremap  :update
-xnoremap ,s :sort
+vnoremap ,s :sort
 nnoremap ,a zM
 nnoremap ,A zR
 nnoremap ,f zC
 nnoremap ,F zO
-nmap ,c :tabclose
-xmap ,c :tabclose
-omap ,c :tabclose
-nmap ,o :tabedit
-xmap ,o :tabedit
-omap ,o :tabedit
-nmap ,m :tabnext
-xmap ,m :tabnext
-omap ,m :tabnext
-nmap ,n :tabprevious
-xmap ,n :tabprevious
-omap ,n :tabprevious
+map ,c :tabclose
+map ,o :tabedit
+map ,m :tabnext
+map ,n :tabprevious
 vnoremap < <gv  " better indentation
-xnoremap > >gv  " better indentation
+vnoremap > >gv  " better indentation
 xmap S <Plug>VSurround
 nmap cS <Plug>CSurround
 nmap cs <Plug>Csurround
 nmap ds <Plug>Dsurround
-xmap gx <Plug>NetrwBrowseXVis
+vmap gx <Plug>NetrwBrowseXVis
 nmap gx <Plug>NetrwBrowseX
 xmap gS <Plug>VgSurround
 nmap gcu <Plug>Commentary<Plug>Commentary
@@ -67,12 +59,8 @@ nmap ySs <Plug>YSsurround
 nmap yss <Plug>Yssurround
 nmap yS <Plug>YSurround
 nmap ys <Plug>Ysurround
-nnoremap <C-Y> :update
-xmap <C-H> h
-nmap <C-H> h
-nnoremap <C-N> :nohl
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
-nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))
+nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())
 snoremap <C-R> "_c
 snoremap <silent> <C-H> "_c
 snoremap <silent> <Del> "_c
@@ -120,12 +108,16 @@ vnoremap <silent> <Plug>(coc-range-select-backward) :call       CocActionAsync
 vnoremap <silent> <Plug>(coc-range-select) :call       CocActionAsync('rangeSelect',     visualmode(), v:true)
 map <C-O> :NERDTreeToggle
 vnoremap <C-N> :nohl
+nnoremap <C-N> :nohl
 onoremap <C-N> :nohl
+nmap <C-H> h
+xmap <C-H> h
 omap <C-H> h
 map <C-L> l
 map <C-K> k
 map <C-J> j
 vnoremap <C-Y> :update
+nnoremap <C-Y> :update
 onoremap <C-Y> :update
 inoremap  
 imap S <Plug>ISurround
@@ -141,7 +133,7 @@ let &cpo=s:cpo_save
 unlet s:cpo_save
 set background=dark
 set backspace=2
-set completeopt=noselect,menuone
+set completeopt=menuone,longest,preview
 set expandtab
 set fileencodings=ucs-bom,utf-8,default,latin1
 set formatoptions=cq
@@ -154,11 +146,10 @@ set incsearch
 set laststatus=2
 set nomodeline
 set mouse=a
-set operatorfunc=<SNR>22_go
 set pastetoggle=<F2>
 set printoptions=paper:a4
 set ruler
-set runtimepath=~/.vim,~/.vim/plugged/gruvbox,~/.vim/plugged/coc.nvim,~/.vim/plugged/emmet-vim,~/.vim/plugged/lightline.vim,~/.vim/plugged/vim-commentary,~/.vim/plugged/vim-surround,~/.vim/plugged/nerdtree,~/.vim/plugged/jedi-vim,~/.vim/plugged/ultisnips,~/.vim/plugged/vimtex,/var/lib/vim/addons,/etc/vim,/usr/share/vim/vimfiles,/usr/share/vim/vim82,/usr/share/vim/vimfiles/after,/etc/vim/after,/var/lib/vim/addons/after,~/.vim/plugged/jedi-vim/after,~/.vim/plugged/ultisnips/after,~/.vim/plugged/vimtex/after,~/.vim/after
+set runtimepath=~/.vim,~/.vim/plugged/gruvbox,~/.vim/plugged/coc.nvim,~/.vim/plugged/emmet-vim,~/.vim/plugged/lightline.vim,~/.vim/plugged/vim-commentary,~/.vim/plugged/vim-surround,~/.vim/plugged/nerdtree,~/.vim/plugged/jedi-vim,~/.vim/plugged/ultisnips,~/.vim/plugged/vimtex,/var/lib/vim/addons,/etc/vim,/usr/share/vim/vimfiles,/usr/share/vim/vim81,/usr/share/vim/vimfiles/after,/etc/vim/after,/var/lib/vim/addons/after,~/.vim/plugged/jedi-vim/after,~/.vim/plugged/ultisnips/after,~/.vim/plugged/vimtex/after,~/.vim/after
 set shiftround
 set shiftwidth=4
 set shortmess=filnxtToOSc
@@ -175,7 +166,7 @@ set undofile
 set undolevels=700
 set updatetime=300
 set wildignore=*.pyc
-set window=52
+set window=44
 set nowritebackup
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
@@ -207,7 +198,7 @@ let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
 imap <buffer> <Nul> <C-Space>
-xnoremap <buffer> ,r :call jedi#rename_visual()
+vnoremap <buffer> ,r :call jedi#rename_visual()
 nnoremap <buffer> ,r :call jedi#rename()
 nnoremap <buffer> ,z :call jedi#usages()
 nnoremap <buffer> ,s :call jedi#goto_stubs()
@@ -249,7 +240,7 @@ setlocal nocursorbind
 setlocal nocursorcolumn
 setlocal nocursorline
 setlocal cursorlineopt=both
-setlocal define=^\\s*\\(def\\|class\\)
+setlocal define=
 setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
@@ -284,7 +275,7 @@ setlocal indentexpr=GetPythonIndent(v:lnum)
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=python3\ -m\ pydoc
+setlocal keywordprg=
 setlocal nolinebreak
 setlocal nolisp
 setlocal lispwords=
@@ -312,7 +303,6 @@ setlocal noscrollbind
 setlocal scrolloff=-1
 setlocal shiftwidth=4
 setlocal noshortname
-setlocal showbreak=
 setlocal sidescrolloff=-1
 set signcolumn=number
 setlocal signcolumn=number
@@ -322,7 +312,6 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal spelloptions=
 setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=.py
 setlocal noswapfile
@@ -330,7 +319,7 @@ setlocal synmaxcol=3000
 if &syntax != 'python'
 setlocal syntax=python
 endif
-setlocal tabstop=4
+setlocal tabstop=8
 setlocal tagcase=
 setlocal tagfunc=
 setlocal tags=
@@ -349,68 +338,36 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-91
+171
 normal! zo
-93
+175
 normal! zo
-94
+177
 normal! zo
-96
+178
 normal! zo
-98
+187
 normal! zo
-100
+189
 normal! zo
-103
-normal! zo
-104
-normal! zo
-106
-normal! zo
-108
-normal! zo
-110
-normal! zo
-91
+189
 normal! zc
-119
+198
 normal! zo
-120
-normal! zo
-121
-normal! zo
-123
-normal! zo
-119
+187
 normal! zc
-136
+203
 normal! zo
-139
+205
 normal! zo
-140
-normal! zo
-144
-normal! zo
-145
-normal! zo
-154
-normal! zo
-158
-normal! zo
-160
-normal! zo
-163
-normal! zo
-165
-normal! zo
-166
-normal! zo
-let s:l = 139 - ((50 * winheight(0) + 25) / 50)
+171
+normal! zc
+let s:l = 31 - ((0 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-139
-normal! 013|
+31
+normal! 0
 tabnext
 edit SpaceObject.py
 set splitbelow splitright
@@ -425,7 +382,7 @@ let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
 imap <buffer> <Nul> <C-Space>
-xnoremap <buffer> ,r :call jedi#rename_visual()
+vnoremap <buffer> ,r :call jedi#rename_visual()
 nnoremap <buffer> ,r :call jedi#rename()
 nnoremap <buffer> ,z :call jedi#usages()
 nnoremap <buffer> ,s :call jedi#goto_stubs()
@@ -467,7 +424,7 @@ setlocal nocursorbind
 setlocal nocursorcolumn
 setlocal nocursorline
 setlocal cursorlineopt=both
-setlocal define=^\\s*\\(def\\|class\\)
+setlocal define=
 setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
@@ -502,7 +459,7 @@ setlocal indentexpr=GetPythonIndent(v:lnum)
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=python3\ -m\ pydoc
+setlocal keywordprg=
 setlocal nolinebreak
 setlocal nolisp
 setlocal lispwords=
@@ -530,7 +487,6 @@ setlocal noscrollbind
 setlocal scrolloff=-1
 setlocal shiftwidth=4
 setlocal noshortname
-setlocal showbreak=
 setlocal sidescrolloff=-1
 set signcolumn=number
 setlocal signcolumn=number
@@ -540,7 +496,6 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal spelloptions=
 setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=.py
 setlocal noswapfile
@@ -548,7 +503,7 @@ setlocal synmaxcol=3000
 if &syntax != 'python'
 setlocal syntax=python
 endif
-setlocal tabstop=4
+setlocal tabstop=8
 setlocal tagcase=
 setlocal tagfunc=
 setlocal tags=
@@ -567,26 +522,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-10
-normal! zo
-11
-normal! zo
-55
-normal! zo
-61
-normal! zo
-74
-normal! zo
-75
-normal! zo
-78
-normal! zo
-let s:l = 66 - ((49 * winheight(0) + 25) / 50)
+let s:l = 1 - ((0 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-66
-normal! 048|
+1
+normal! 0
 tabnext
 edit UIObject.py
 set splitbelow splitright
@@ -601,7 +542,7 @@ let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <expr> <C-Space> jedi#complete_string(0)
 imap <buffer> <Nul> <C-Space>
-xnoremap <buffer> ,r :call jedi#rename_visual()
+vnoremap <buffer> ,r :call jedi#rename_visual()
 nnoremap <buffer> ,r :call jedi#rename()
 nnoremap <buffer> ,z :call jedi#usages()
 nnoremap <buffer> ,s :call jedi#goto_stubs()
@@ -643,7 +584,7 @@ setlocal nocursorbind
 setlocal nocursorcolumn
 setlocal nocursorline
 setlocal cursorlineopt=both
-setlocal define=^\\s*\\(def\\|class\\)
+setlocal define=
 setlocal dictionary=
 setlocal nodiff
 setlocal equalprg=
@@ -678,7 +619,7 @@ setlocal indentexpr=GetPythonIndent(v:lnum)
 setlocal indentkeys=0{,0},0),0],:,!^F,o,O,e,<:>,=elif,=except
 setlocal noinfercase
 setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=python3\ -m\ pydoc
+setlocal keywordprg=
 setlocal nolinebreak
 setlocal nolisp
 setlocal lispwords=
@@ -706,7 +647,6 @@ setlocal noscrollbind
 setlocal scrolloff=-1
 setlocal shiftwidth=4
 setlocal noshortname
-setlocal showbreak=
 setlocal sidescrolloff=-1
 set signcolumn=number
 setlocal signcolumn=number
@@ -716,7 +656,6 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal spelloptions=
 setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=.py
 setlocal noswapfile
@@ -724,7 +663,7 @@ setlocal synmaxcol=3000
 if &syntax != 'python'
 setlocal syntax=python
 endif
-setlocal tabstop=4
+setlocal tabstop=8
 setlocal tagcase=
 setlocal tagfunc=
 setlocal tags=
@@ -743,31 +682,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-29
-normal! zo
-70
-normal! zo
-71
-normal! zo
-77
-normal! zo
-84
-normal! zo
-86
-normal! zo
-91
-normal! zo
-100
-normal! zo
-102
-normal! zo
-197
-normal! zo
-let s:l = 95 - ((24 * winheight(0) + 25) / 50)
+let s:l = 1 - ((0 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-95
+1
 normal! 0
 tabnext
 edit README.md
@@ -797,7 +716,7 @@ setlocal cinwords=if,else,while,do,for,switch
 set colorcolumn=80
 setlocal colorcolumn=80
 setlocal comments=fb:*,fb:-,fb:+,n:>
-setlocal commentstring=<!--%s-->
+setlocal commentstring=>\ %s
 setlocal complete=.,w,b,u,t,i
 setlocal concealcursor=
 set conceallevel=1
@@ -872,7 +791,6 @@ setlocal noscrollbind
 setlocal scrolloff=-1
 setlocal shiftwidth=4
 setlocal noshortname
-setlocal showbreak=
 setlocal sidescrolloff=-1
 set signcolumn=number
 setlocal signcolumn=number
@@ -882,7 +800,6 @@ setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
-setlocal spelloptions=
 setlocal statusline=%{lightline#link()}%#LightlineLeft_active_0#%(\ %{lightline#mode()}\ %)%{(&paste)?\"|\":\"\"}%(\ %{&paste?\"PASTE\":\"\"}\ %)%#LightlineLeft_active_0_1#%#LightlineLeft_active_1#%(\ %R\ %)%{(&readonly)&&(1||(&modified||!&modifiable))?\"|\":\"\"}%(\ %t\ %)%{(&modified||!&modifiable)?\"|\":\"\"}%(\ %M\ %)%#LightlineLeft_active_1_2#%#LightlineMiddle_active#%=%#LightlineRight_active_2_3#%#LightlineRight_active_2#%(\ %{&ff}\ %)%{1||1?\"|\":\"\"}%(\ %{&fenc!=#\"\"?&fenc:&enc}\ %)%{1?\"|\":\"\"}%(\ %{&ft!=#\"\"?&ft:\"no\ ft\"}\ %)%#LightlineRight_active_1_2#%#LightlineRight_active_1#%(\ %3p%%\ %)%#LightlineRight_active_0_1#%#LightlineRight_active_0#%(\ %3l:%-2c\ %)
 setlocal suffixesadd=
 setlocal noswapfile
@@ -909,19 +826,18 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 25) / 50)
+let s:l = 1 - ((0 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
-tabnext 3
+tabnext 1
 set stal=1
 badd +0 main.py
-badd +1 SpaceObject.py
-badd +1 UIObject.py
-badd +1 README.md
-badd +1 World.py
+badd +0 SpaceObject.py
+badd +0 UIObject.py
+badd +0 README.md
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif
@@ -929,7 +845,7 @@ unlet! s:wipebuf
 set winheight=1 winwidth=20 shortmess=filnxtToOSc
 set winminheight=1 winminwidth=1
 let s:sx = expand("<sfile>:p:r")."x.vim"
-if filereadable(s:sx)
+if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)
 endif
 let &so = s:so_save | let &siso = s:siso_save
