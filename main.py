@@ -28,6 +28,7 @@ TIMESTEP = 0
 PHSXTIME = 0.005
 SIMSPEED = 1
 step_size = int(SIMSPEED / PHSXTIME)
+forwardSimSteps = 20000
 
 SELECTED = None
 camXY = PG.Vector2(0,0)
@@ -49,6 +50,11 @@ def backgroundDrawing():
     screen.fill(BGCOLOR)
 
 def spaceObjectDrawing():
+    # Sim path draw
+    for obj in objectList:
+        obj.DrawSimPath(screen, camXY, camZOOM, forwardSimSteps, PAUSED, objectList)
+
+    # Object draw
     for obj in objectList:
         pos = obj.GetStepPos(TIMESTEP, camXY)
         if (SELECTED == obj):
@@ -65,7 +71,11 @@ def sim(steps=1, reset=False):
     if (reset or TIMESTEP == 0):
         for obj in objectList: obj.ResetSteps()
 
+    collision = False
     for s in range(steps):
+        if (collision):
+            break
+
         for obj in objectList:
             nPos = PG.Vector2(obj.simSteps[-1].pos) + (obj.simSteps[-1].vel * PHSXTIME)/camZOOM
             nVel = PG.Vector2()
@@ -83,7 +93,11 @@ def sim(steps=1, reset=False):
 
             obj.simSteps.append(SO.simVars(nPos,nVel))
 
-
+        for obj in objectList:
+            if (obj.Collides(s, objectList, camZOOM) != None):
+                collision = True
+                break
+                
 WSADKeysPressed = [False,False,False,False] 
 def WSADmoveKeys(event):
     global WSADKeysPressed
@@ -125,18 +139,19 @@ def camZooming(zoom):
     oldzoom = copy.copy(camZOOM)
     camZOOM += zoom
 
-    # solve how to move well
-
     for obj in objectList:
         obj.ChangeCoordinates(oldzoom, camZOOM)
+
+    sim(TIMESTEP, True)
 
 def mouseClick(event):
     global SELECTED, PAUSED, TIMESTEP
 
     if (event.type == PG.MOUSEBUTTONDOWN):
+        # RIGHT CLICK
         if (PG.mouse.get_pressed()[0]):
             pos = PG.mouse.get_pos() - camXY
-                
+
             # Test for mouse over object hover
             for obj in objectList: 
                 if (obj.Contains(pos, camZOOM)):
@@ -146,42 +161,42 @@ def mouseClick(event):
 
             TIMESTEP = 0
             PAUSED = True
-                        
-            if not (SELECTED):
-                # Else add object to mouse pos
+            
+            if not (SELECTED): # Else add object to mouse pos
                 objectList.append(SO.Object(pos, [0,0], 1000, objectList, camZOOM))
 
-            if (SELECTED):
-                # Test for click outside of popup
+            if (SELECTED): # Test for click outside of popup
                 c = screen.get_at(PG.mouse.get_pos())
                 if (c == BGCOLOR):
                     SELECTED = None
 
+        # LEFT CLICK
         if (PG.mouse.get_pressed()[2] and not SELECTED):
             pos = PG.mouse.get_pos() - camXY
+
+            # Remove object
             for obj in objectList: 
                 if (obj.Contains(pos, camZOOM)):
                     objectList.remove(obj)
+
+                    # Resim
+                    if (len(objectList) > 0): objectList[0].simUpdate = True
+
                     return
 
 def CheckSimUpdate():
     for obj in objectList:
         if (obj.simUpdate):
-            print('update')
-            sim(10000, True)
+            sim(forwardSimSteps, True)
 
             for _obj in objectList:
                 _obj.simUpdate = False
     
 while True:
-    # DRAW PHASE
     backgroundDrawing()
 
     # # Problémy, simuluju a kreslím každé kolo, i když není potřeba = PAIN
     if (PAUSED and TIMESTEP == 0): CheckSimUpdate()
-    if (PAUSED):
-        for obj in objectList:
-            obj.DrawSimPath(screen, camXY, camZOOM, objectList)
 
     spaceObjectDrawing()
 
@@ -195,6 +210,9 @@ while True:
             if (event.key == PG.K_SPACE):
                 PAUSED = not PAUSED
                 SELECTED = None
+
+            if (event.key == PG.K_r):
+                camXY = PG.Vector2()
 
         mouseClick(event)
         WSADmoveKeys(event)

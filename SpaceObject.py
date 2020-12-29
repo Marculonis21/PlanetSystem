@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from collections import deque
 import copy
 import numpy as np
 import pygame as PG
@@ -9,7 +10,7 @@ MASS2SIZE = 1/3
 class Object:
     def __init__(self, startPosition, startVelocity, mass, _list, zoom):
         self.sPos = PG.Vector2(startPosition)
-        self.sVel = startVelocity
+        self.sVel = PG.Vector2(startVelocity)
 
         self.mass = mass
 
@@ -18,12 +19,14 @@ class Object:
                               random.randint(0,255),
                               random.randint(0,255))
 
-        self.simSteps = [simVars(self.sPos, self.sVel)]
-
-        self.simUpdate = True
+        # self.simSteps = []
+        self.simSteps = deque(maxlen=100)
+        self.simSteps.size
+        self.ResetSteps()
 
     def ResetSteps(self):    
-        self.simSteps = [simVars(self.sPos, self.simSteps[0].vel)]
+        # self.simSteps = [simVars(self.sPos, self.sVel)]
+        self.simSteps.append(simVars(self.sPos, self.sVel))
         self.simUpdate = True
 
     def ChangeCoordinates(self, b1, b2): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
@@ -36,22 +39,28 @@ class Object:
         b = np.array(u)
         x = np.linalg.solve(a, b)
 
-        self.sPos = PG.Vector2(x[0],x[1])
-        self.ResetSteps()
+        nPos = PG.Vector2(x[0],x[1])
+        change = nPos - self.sPos
+        self.sPos += change
+
+        for step in len(self.simSteps):
+            step.
+            
+
+        # self.ResetSteps()
     
     def SetStartVel(self, vel=(None, None)):
-        if (vel[0] != None): self.simSteps[0].vel.x = vel[0]
-        if (vel[1] != None): self.simSteps[0].vel.y = vel[1]
+        if (vel[0] != None): self.sVel.x = vel[0]
+        if (vel[1] != None): self.sVel.y = vel[1]
 
         if not (vel[0] == vel[1] == None):
+            self.ResetSteps()
             self.simUpdate = True
-    
+
     def SetMass(self, mass):
         if (mass <= 0):
             mass = 1
             
-        oldmass = self.mass
-
         self.mass = mass
         self.size = mass**(MASS2SIZE) + 10
         self.simUpdate = True
@@ -63,24 +72,18 @@ class Object:
         pos = self.simSteps[idx].pos + translate 
         return (int(pos.x),int(pos.y))
 
-    def DrawSimPath(self, screen, offset, zoom, others):
-        if (len(self.simSteps) > 10000):
-            s = len(self.simSteps) - 9999
-        else:
-            s = 1
-            
-        # for step in range(s, len(self.simSteps)):
-        for step in range(s, len(self.simSteps), len(self.simSteps)//100):
-            p1 = self.simSteps[step].pos+offset
-            # p2 = self.simSteps[step-1].pos+offset
-            # PG.draw.line(screen, self.color, p1, p2, 2)
+    def DrawSimPath(self, screen, offset, zoom, forwardSteps, paused, others):
+        self.forwardSteps = forwardSteps
+        if (paused): s = 0
+        else: s = max(0, len(self.simSteps) - forwardSteps//5)
 
-            PG.draw.circle(screen, self.color, p1, 2)
+        for step in range(s, len(self.simSteps), forwardSteps//100):
+            p = self.simSteps[step].pos+offset
+            PG.draw.circle(screen, self.color, p, 2)
 
-            colPos = self.Collides(step, others, zoom)
-            if (colPos != None):
-                PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size/zoom)
-                break
+        colPos = self.Collides(len(self.simSteps)-1, others, zoom)
+        if (colPos != None):
+            PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size/zoom)
 
     def Contains(self, pos, zoom):
         if ((self.sPos - pos).magnitude() <= self.size*zoom): return True
