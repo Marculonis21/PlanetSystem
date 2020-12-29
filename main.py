@@ -52,7 +52,7 @@ def backgroundDrawing():
 def spaceObjectDrawing():
     # Sim path draw
     for obj in objectList:
-        obj.DrawSimPath(screen, camXY, camZOOM, forwardSimSteps, PAUSED, objectList)
+        obj.DrawSimPath(screen, camXY, camZOOM, forwardSimSteps, PAUSED, TIMESTEP, objectList)
 
     # Object draw
     for obj in objectList:
@@ -127,6 +127,29 @@ def camMovement():
     if (WSADKeysPressed[2]): camXY[0] += camMoveSpeed
     if (WSADKeysPressed[3]): camXY[0] -= camMoveSpeed
 
+ARROWKeysPressed = [False,False,False,False] 
+def arrowKeys(event):
+    global ARROWKeysPressed
+    if (event.type == PG.KEYUP):
+        if event.key == PG.K_UP:
+            ARROWKeysPressed[0] = False
+        if event.key == PG.K_DOWN:
+            ARROWKeysPressed[1] = False
+        if event.key == PG.K_LEFT:
+            ARROWKeysPressed[2] = False
+        if event.key == PG.K_RIGHT:
+            ARROWKeysPressed[3] = False
+        
+    if (event.type == PG.KEYDOWN):
+        if event.key == PG.K_UP:
+            ARROWKeysPressed[0] = True
+        if event.key == PG.K_DOWN:
+            ARROWKeysPressed[1] = True
+        if event.key == PG.K_LEFT:
+            ARROWKeysPressed[2] = True
+        if event.key == PG.K_RIGHT:
+            ARROWKeysPressed[3] = True
+
 def mouseWheel(event):
     if (event.type == PG.MOUSEBUTTONDOWN):
         if (event.button == 5): # scrool down
@@ -200,7 +223,9 @@ while True:
 
     spaceObjectDrawing()
 
-    if (SELECTED and PAUSED): popup.Draw(screen, SELECTED)
+    if (SELECTED and PAUSED): 
+        popup.Draw(screen, SELECTED)
+        if (TIMESTEP == 0): SELECTED.ChangeStartPos(ARROWKeysPressed, 5)
 
     # PYGAME INPUT EVENTS
     camMovement()
@@ -216,6 +241,7 @@ while True:
 
         mouseClick(event)
         WSADmoveKeys(event)
+        arrowKeys(event)
         mouseWheel(event)
 
         if (SELECTED and PAUSED):

@@ -120,7 +120,7 @@ class ObjPopup(UI):
                     elif (inp.pointer == "r" or inp.pointer == "g" or inp.pointer == "b"):
                         value = inp.GetDragValue(mousePos, 5)
                     elif (inp.pointer == "xvel" or inp.pointer == "yvel"):
-                        value = inp.GetDragValue(mousePos, 10)
+                        value = inp.GetDragValue(mousePos, 50)
 
                     inp.SetText(value)
 
@@ -247,7 +247,6 @@ class InputField:
     def __init__(self, x,y,width,height,text="",xalign=0,pointer="",minValue=-1,maxValue=-1,decimal=0):
         self.field = PG.Rect(x,y,width,height)
         self.text = text
-        self.fText = text
         self.cursor = 0 
         self.FONT = PG.font.SysFont('Arial', 20, False, False)
         self.xalign = xalign
@@ -277,8 +276,7 @@ class InputField:
 
         drawText = None
         if (self.selected):
-            self.fText = self.text[:len(self.text)-self.cursor] +"|"+self.text[len(self.text)-self.cursor:]
-            drawText = self.fText
+            drawText = self.text[:len(self.text)-self.cursor] +"|"+self.text[len(self.text)-self.cursor:]
         else:
             drawText = self.text
 
