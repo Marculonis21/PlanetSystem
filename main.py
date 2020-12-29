@@ -64,11 +64,10 @@ def step():
 def sim(steps=1, reset=False):
     if (reset or TIMESTEP == 0):
         for obj in objectList: obj.ResetSteps()
-        
+
     for s in range(steps):
         for obj in objectList:
             nPos = PG.Vector2(obj.simSteps[-1].pos) + (obj.simSteps[-1].vel * PHSXTIME)/camZOOM
-
             nVel = PG.Vector2()
             nVel += obj.simSteps[-1].vel
 
@@ -79,9 +78,7 @@ def sim(steps=1, reset=False):
                     F = GRAV_CONS * (m)/(r**2)
 
                     _dir = (obj.simSteps[-1].pos - other.simSteps[-1].pos).normalize()
-
                     accel = _dir * (F/obj.mass)
-
                     nVel -= (accel * PHSXTIME)
 
             obj.simSteps.append(SO.simVars(nPos,nVel))
@@ -167,13 +164,21 @@ def mouseClick(event):
                     objectList.remove(obj)
                     return
 
+def CheckSimUpdate():
+    for obj in objectList:
+        if (obj.simUpdate):
+            print('update')
+            sim(10000, True)
+
+            for _obj in objectList:
+                _obj.simUpdate = False
+    
 while True:
     # DRAW PHASE
     backgroundDrawing()
 
-    # Problémy, simuluju a kreslím každé kolo, i když není potřeba = PAIN
-    if (PAUSED and TIMESTEP == 0):
-        sim(10000, True)
+    # # Problémy, simuluju a kreslím každé kolo, i když není potřeba = PAIN
+    if (PAUSED and TIMESTEP == 0): CheckSimUpdate()
     if (PAUSED):
         for obj in objectList:
             obj.DrawSimPath(screen, camXY, camZOOM, objectList)
@@ -197,7 +202,6 @@ while True:
 
         if (SELECTED and PAUSED):
             popup.Event_handler(event)
-
         
     # FRAMERATE, REDRAW, PHYSICS STEP
     if not (PAUSED):

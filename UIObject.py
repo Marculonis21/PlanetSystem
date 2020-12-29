@@ -129,8 +129,8 @@ class ObjPopup(UI):
                     g = self.obj.color[1]
                     b = self.obj.color[2]
                     if (inp.pointer == "mass"):   self.obj.SetMass(float(inp.text))
-                    elif (inp.pointer == "xvel"): self.obj.simSteps[0].vel.x = float(inp.text)
-                    elif (inp.pointer == "yvel"): self.obj.simSteps[0].vel.y = float(inp.text)
+                    elif (inp.pointer == "xvel"): self.obj.SetStartVel((float(inp.text), None))
+                    elif (inp.pointer == "yvel"): self.obj.SetStartVel((None, float(inp.text)))
                     elif (inp.pointer == "r"):    r = int(inp.text)
                     elif (inp.pointer == "g"):    g = int(inp.text)
                     elif (inp.pointer == "b"):    b = int(inp.text)
@@ -152,10 +152,8 @@ class ObjPopup(UI):
                         inp.cursor -= 1
                     elif (event.key == PG.K_RETURN): 
                         inp.selected = False
-                        if (inp.text == "" or inp.text == "-"):
-                            inp.SetText(0)
-                        else:
-                            inp.SetText(inp.text)
+                        if (inp.text == "" or inp.text == "-"): inp.SetText(0)
+                        else: inp.SetText(inp.text)
 
                     # ARROW KEYS - moving cursor around
                     elif (event.key == PG.K_LEFT):
@@ -172,11 +170,10 @@ class ObjPopup(UI):
                         inp.SetText(inp.text)
 
                         # SHIFT+TAB/TAB
-                        if (PG.key.get_mods() & PG.KMOD_SHIFT): 
-                            idx -= 1
-                        else:
-                            idx += 1
+                        if (PG.key.get_mods() & PG.KMOD_SHIFT): idx -= 1
+                        else: idx += 1
 
+                        # LOOP AROUND
                         try:
                             self.inputs[idx].selected = True
                         except IndexError:
@@ -188,6 +185,8 @@ class ObjPopup(UI):
                             
                     # ALLOWED KEYS
                     elif (str(key) in "0123456789-."):
+
+                        # MINUS
                         if (key == "-"):
                             text = "-"+inp.text
                             if (len(text) > 1):
@@ -196,36 +195,34 @@ class ObjPopup(UI):
 
                             inp.SetText(text)
 
+                        # DOT
                         elif (key == "."):
-                            if (len(inp.text) == 0):
-                                text = "0."
-                            elif ("." in inp.text):
-                                text = inp.text
-                            else:
-                                text = inp.text+"."
+                            if (len(inp.text) == 0): text = "0."
+                            elif ("." in inp.text): text = inp.text
+                            else: text = inp.text + "."
                                 
                             inp.text = text
                                 
+                        # NUMBERS
                         else:
                             inp.text = inp.text[:len(inp.text)-inp.cursor] + str(key) + inp.text[len(inp.text)-inp.cursor:]
+
 
                     # Final Text->Variable + value checks 
                     value = None
                     if (inp.text == "" or inp.text == "-"):
-                        if (inp.pointer == "mass"):
-                            value = 1
-                        else:
-                            value = 0
+                        if (inp.pointer == "mass"): value = 1
+                        else: value = 0
 
                     if (inp.pointer == "mass"): 
                         if (value == None): self.obj.SetMass(float(inp.text))
                         else: self.obj.SetMass(value)
                     if (inp.pointer == "xvel"): 
-                        if (value == None): self.obj.simSteps[0].vel.x = float(inp.text)
-                        else: self.obj.simSteps[0].vel.x = value
+                        if (value == None): self.obj.SetStartVel((float(inp.text), None))
+                        else: self.obj.SetStartVel((float(value), None))
                     if (inp.pointer == "yvel"): 
-                        if (value == None): self.obj.simSteps[0].vel.y = float(inp.text)
-                        else: self.obj.simSteps[0].vel.y = value
+                        if (value == None): self.obj.SetStartVel((None, float(inp.text)))
+                        else: self.obj.SetStartVel((None, float(value)))
 
                     r = self.obj.color[0]
                     g = self.obj.color[1]

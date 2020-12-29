@@ -20,8 +20,11 @@ class Object:
 
         self.simSteps = [simVars(self.sPos, self.sVel)]
 
+        self.simUpdate = True
+
     def ResetSteps(self):    
         self.simSteps = [simVars(self.sPos, self.simSteps[0].vel)]
+        self.simUpdate = True
 
     def ChangeCoordinates(self, b1, b2): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
         u = (self.sPos.x * PG.Vector2(b1,0) + 
@@ -35,7 +38,14 @@ class Object:
 
         self.sPos = PG.Vector2(x[0],x[1])
         self.ResetSteps()
+    
+    def SetStartVel(self, vel=(None, None)):
+        if (vel[0] != None): self.simSteps[0].vel.x = vel[0]
+        if (vel[1] != None): self.simSteps[0].vel.y = vel[1]
 
+        if not (vel[0] == vel[1] == None):
+            self.simUpdate = True
+    
     def SetMass(self, mass):
         if (mass <= 0):
             mass = 1
@@ -44,6 +54,7 @@ class Object:
 
         self.mass = mass
         self.size = mass**(MASS2SIZE) + 10
+        self.simUpdate = True
 
     def SetColor(self, color):
         self.color = PG.Color(color[0],color[1],color[2])
