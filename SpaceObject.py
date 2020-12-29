@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from collections import deque
 import copy
 import numpy as np
 import pygame as PG
@@ -19,14 +18,11 @@ class Object:
                               random.randint(0,255),
                               random.randint(0,255))
 
-        # self.simSteps = []
-        self.simSteps = deque(maxlen=100)
-        self.simSteps.size
+        self.simSteps = []
         self.ResetSteps()
 
     def ResetSteps(self):    
-        # self.simSteps = [simVars(self.sPos, self.sVel)]
-        self.simSteps.append(simVars(self.sPos, self.sVel))
+        self.simSteps = [simVars(self.sPos, self.sVel)]
         self.simUpdate = True
 
     def ChangeCoordinates(self, b1, b2): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
@@ -39,15 +35,8 @@ class Object:
         b = np.array(u)
         x = np.linalg.solve(a, b)
 
-        nPos = PG.Vector2(x[0],x[1])
-        change = nPos - self.sPos
-        self.sPos += change
-
-        for step in len(self.simSteps):
-            step.
-            
-
-        # self.ResetSteps()
+        self.sPos = PG.Vector2(x[0],x[1])
+        self.ResetSteps()
     
     def SetStartVel(self, vel=(None, None)):
         if (vel[0] != None): self.sVel.x = vel[0]
