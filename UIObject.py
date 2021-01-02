@@ -5,32 +5,35 @@ import pygame as PG
 class UI:
     def __init__(self):
         self.image = None
-        self.posOffset = PG.Vector2()
 
         self.items = []
-        self.itemPos = None
+        self.itemPos = PG.Vector2()
         self.inputs = []
+        self.radioButtons = []
 
         self.FONT = PG.font.SysFont('Arial', 20, False, False)
 
-    def Draw(self, screen, position):
-        pos = PG.Vector2(position) + self.posOffset
+    def Draw(self, screen, pos):
+        pos = PG.Vector2(pos)
 
         if (self.image != None):
             screen.blit(self.image, pos)
 
-        for index, t in enumerate(self.items):
-            textSurface = self.FONT.render(t, True, PG.Color("white"))
-            screen.blit(textSurface, (pos.x+self.itemPos.x, 
-                                      pos.y+self.itemPos.y + 25*index))
+        if not (pos == None):
+            for index, t in enumerate(self.items):
+                textSurface = self.FONT.render(t, True, PG.Color("white"))
+                screen.blit(textSurface, (pos.x+self.itemPos.x, 
+                                          pos.y+self.itemPos.y + 25*index))
 
         for inp in self.inputs:
             inp.Draw(screen)
+        for rb in self.radioButtons:
+            rb.Draw(screen)
 
 class ObjPopup(UI):
     def __init__(self):
         super().__init__()
-        self.itemPos = PG.Vector2(40, -200)
+        self.itemPos = PG.Vector2(40, -225)
         self.obj = None
         self.dragStart = None
 
@@ -39,10 +42,12 @@ class ObjPopup(UI):
                       "Velocity:",
                       "X:",
                       "Y:",
+                      "Central object:",
                       "RGB Golor:"]
 
+        self.radioButtons = []
+
     def Draw(self, screen, obj):
-        # Get draw pos and rect
         height = screen.get_height()
         pos = (0, height)
         self.obj = obj
@@ -50,7 +55,7 @@ class ObjPopup(UI):
         if (self.inputs == []): # First draw -> load inputs
             self.SetupInput(pos + self.itemPos, self.obj)
 
-        r = PG.Rect(15,height-215,250,200)
+        r = PG.Rect(15,height-240,250,225)
         PG.draw.rect(screen, PG.Color(40,40,40), r, border_radius=10,border_top_right_radius=50)
 
         super().Draw(screen, pos)
@@ -59,17 +64,29 @@ class ObjPopup(UI):
         x = pos.x
         y = pos.y
  
-        self.inputs = [InputField(x+100, y+25,80,23,             str(obj.mass),5,"mass", 1, -1,0),
-                       InputField(x+100, y+75,80,23,str(obj.simSteps[0].vel.x),5,"xvel",-1, -1,1),
-                       InputField(x+100,y+100,80,23,str(obj.simSteps[0].vel.y),5,"yvel",-1, -1,1),
-                       InputField(x,    y+150,45,23,         str(obj.color[0]),5,   "r", 0,255,0),
-                       InputField(x+50, y+150,45,23,         str(obj.color[1]),5,   "g", 0,255,0),
-                       InputField(x+100,y+150,45,23,         str(obj.color[2]),5,   "b", 0,255,0)]
+        self.inputs = [InputField(x+120, y+25,80,22,             str(obj.mass),5,"mass", 1, -1,0),
+                       InputField(x+120, y+75,80,22,str(obj.simSteps[0].vel.x),5,"xvel",-1, -1,1),
+                       InputField(x+120,y+100,80,22,str(obj.simSteps[0].vel.y),5,"yvel",-1, -1,1),
+                       InputField(x,    y+175,45,22,         str(obj.color[0]),5,   "r", 0,255,0),
+                       InputField(x+50, y+175,45,22,         str(obj.color[1]),5,   "g", 0,255,0),
+                       InputField(x+100,y+175,45,22,         str(obj.color[2]),5,   "b", 0,255,0)]
+
+        self.radioButtons = [RadioButton(x+178,y+125,22,22,self.obj.static)]
 
 
-    def Event_handler(self, event):
+    def Event_handler(self, event, objectList):
+        for rb in self.radioButtons:
+            # RadioButton events
+            out = rb.Event_handler(event)
+            if (out == 1):
+                for obj in objectList:
+                    obj.SetStatic(False)
+
+                self.obj.SetStatic(True)
+            elif (out == 0):
+                self.obj.SetStatic(False)
+
         for inp in self.inputs:
-
             # Input background color changes - drag/hover
             if (self.dragStart == None and inp.field.collidepoint(PG.mouse.get_pos())) or (inp.drag):
                 inp.bgcolor = inp.HOVER_COLOR
@@ -242,7 +259,6 @@ class ObjPopup(UI):
                     
                     self.obj.SetColor(PG.Color(r,g,b))
 
-
 class InputField: 
     def __init__(self, x,y,width,height,text="",xalign=0,pointer="",minValue=-1,maxValue=-1,decimal=0):
         self.field = PG.Rect(x,y,width,height)
@@ -300,3 +316,133 @@ class InputField:
 
     def GetDragValue(self, mousePos, scale):
         return (self.dragOrigValue + ((mousePos - self.dragOrigPos).x)/scale)
+
+class RadioButton:
+    def __init__(self, x, y, width, height, default=False):
+        self.rect = PG.Rect(x,y,width,height)
+        self.FONT = PG.font.SysFont('Arial', 20, False, False)
+
+        self.BG_COLOR = PG.Color(90,90,90)
+        self.HOVER_COLOR = PG.Color(120,120,120)
+
+        self.bgcolor = self.BG_COLOR
+
+        self.text = " "
+        self.toggle = default
+
+    def Draw(self, screen):
+        if (self.toggle): self.text = "X"
+        else: self.text = ""
+
+        self.textSurface = self.FONT.render(self.text, True, PG.Color("white"))
+            
+        PG.draw.rect(screen, self.bgcolor, self.rect)
+        screen.blit(self.textSurface, self.rect.topleft+PG.Vector2(4,2))
+
+    def Event_handler(self, event): 
+        if (self.rect.collidepoint(PG.mouse.get_pos())): self.bgcolor = self.HOVER_COLOR
+        else: self.bgcolor = self.BG_COLOR
+            
+        if (event.type == PG.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos)):
+            self.toggle = not self.toggle
+            if (self.toggle): return 1
+            else: return 0
+
+class TopMenu(UI):
+    def __init__(self):
+        super().__init__()
+        self.itemPos = PG.Vector2(13,5)
+        self.items = []
+        self.inItems = [] 
+        self.SELECTED = False
+        self.rect = None
+        self.rectHeight = 25
+        self.borderRect = PG.Rect(0,0,300,200)
+
+        self.NORMAL_COLOR = PG.Color(40,40,40)
+        self.HOVER_COLOR = PG.Color(50,50,50)
+
+        self.color = self.NORMAL_COLOR
+
+    def Draw(self, screen, num):
+        pos = (15+80*num, 0)
+
+        self.rect = PG.Rect(15+80*num, 0, 65, self.rectHeight)
+        PG.draw.rect(screen, self.color, self.rect, border_bottom_right_radius=5, border_bottom_left_radius=5)
+
+        super().Draw(screen, pos)
+
+        if (self.SELECTED):
+            for index, item in enumerate(self.inItems): 
+                item.Draw(screen, pos, index)
+
+    def Event_hanlder(self, event, others):
+        if (self.rect.collidepoint(PG.mouse.get_pos())): 
+            self.color = self.HOVER_COLOR
+            self.rectHeight = 30
+        else: 
+            self.color = self.NORMAL_COLOR
+            self.rectHeight = 25
+
+        if not (self.borderRect.collidepoint(PG.mouse.get_pos())):
+            for other in others:
+                if (other == self): continue
+                other.SELECTED = False
+            return
+            
+        if (self.SELECTED):
+            for item in self.inItems:
+                out = item.Event_hanlder(event)
+                if not (out == None): return out
+                
+        else: 
+            if (event.type == PG.MOUSEBUTTONDOWN):
+                if (self.rect.collidepoint(event.pos)):
+                    self.SELECTED = True
+
+                    for other in others:
+                        if (other == self): continue
+                        other.SELECTED = False
+
+                    if (self.items[0] == "Help"): return "help"
+
+class MenuItem(UI):
+    def __init__(self, text, pointer, shortcut="", scPos=PG.Vector2(), width=120):
+        super().__init__()
+        self.itemPos = PG.Vector2(15,5)
+        self.items = [text]
+        self.shortcut = shortcut
+        self.scPos = PG.Vector2(scPos)
+        self.width = width
+        self.pointer = pointer
+        self.rect = None
+
+        self.NORMAL_COLOR = PG.Color(40,40,40)
+        self.HOVER_COLOR = PG.Color(50,50,50)
+
+        self.color = self.NORMAL_COLOR
+
+        self.FONT = PG.font.SysFont('Arial', 20, False, False)
+
+    def Draw(self, screen, pos, index):
+        pos = PG.Vector2(pos)
+        pos = PG.Vector2(pos.x+0, pos.y+30+30*index)
+
+        self.rect = PG.Rect(pos.x, pos.y, self.width, 28)
+        PG.draw.rect(screen, self.color, self.rect)
+
+        if not (self.shortcut == ""):
+            textSurface = self.FONT.render(self.shortcut, True, PG.Color("gray"))
+            screen.blit(textSurface, (pos.x+self.scPos.x, 
+                                      pos.y+self.scPos.y))
+
+        super().Draw(screen, pos)
+
+    def Event_hanlder(self, event):
+        if not (self.pointer == None):
+            if (self.rect.collidepoint(PG.mouse.get_pos())): self.color = self.HOVER_COLOR
+            else: self.color = self.NORMAL_COLOR
+            
+        if (event.type == PG.MOUSEBUTTONDOWN):
+            if (self.rect.collidepoint(event.pos)):
+                return self.pointer

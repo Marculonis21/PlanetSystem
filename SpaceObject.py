@@ -18,6 +18,8 @@ class Object:
                               random.randint(0,255),
                               random.randint(0,255))
 
+        self.static = False
+
         self.simSteps = []
         self.ResetSteps()
 
@@ -25,9 +27,21 @@ class Object:
         self.simSteps = [simVars(self.sPos, self.sVel)]
         self.simUpdate = True
 
-    def ChangeCoordinates(self, b1, b2): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
-        u = (self.sPos.x * PG.Vector2(b1,0) + 
-             self.sPos.y * PG.Vector2(0,b1))
+    def ChangeCoordinates(self, b1, b2, paused, forwardSteps): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
+        self.sPos = self.__changeCoords__(b1, b2, self.sPos)
+        self.simSteps[0] = simVars(self.sPos, self.sVel)
+        if (paused): self.ResetSteps()
+
+        s = max(0, len(self.simSteps) - forwardSteps//4)
+        for step in range(s, len(self.simSteps)):
+            _pos = self.simSteps[step].pos
+
+            nPos = self.__changeCoords__(b1,b2, _pos)
+            self.simSteps[step].pos = nPos
+
+    def __changeCoords__(self, b1, b2, pos):
+        u = (pos.x * PG.Vector2(b1,0) + 
+             pos.y * PG.Vector2(0,b1))
 
         a = np.array([[b2,0],
                       [0,b2]])
@@ -35,9 +49,9 @@ class Object:
         b = np.array(u)
         x = np.linalg.solve(a, b)
 
-        self.sPos = PG.Vector2(x[0],x[1])
-        self.ResetSteps()
-    
+        pos = PG.Vector2(x[0],x[1])
+        return pos
+
     def SetStartVel(self, vel=(None, None)):
         if (vel[0] != None): self.sVel.x = vel[0]
         if (vel[1] != None): self.sVel.y = vel[1]
@@ -67,6 +81,10 @@ class Object:
         self.size = mass**(MASS2SIZE) + 10
         self.simUpdate = True
 
+    def SetStatic(self, static):
+        self.static = static
+        self.simUpdate = True
+
     def SetColor(self, color):
         self.color = PG.Color(color[0],color[1],color[2])
 
@@ -82,7 +100,7 @@ class Object:
                 
         for step in range(s, len(self.simSteps), forwardSteps//100):
             p = self.simSteps[step].pos+offset
-            PG.draw.circle(screen, self.color, p, 2)
+            PG.draw.circle(screen, self.color, p, 1)
 
         colPos = self.Collides(len(self.simSteps)-1, others, zoom)
 
@@ -90,7 +108,7 @@ class Object:
             PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size/zoom)
 
     def Contains(self, pos, zoom):
-        if ((self.sPos - pos).magnitude() <= self.size*zoom): return True
+        if ((self.sPos - pos).magnitude() <= self.size/zoom): return True
 
     def Collides(self, TIMESTEP, others, zoom):
         _pos = PG.Vector2(self.GetStepPos(TIMESTEP,PG.Vector2()))
@@ -101,7 +119,6 @@ class Object:
             _otherPos = PG.Vector2(obj.GetStepPos(TIMESTEP, PG.Vector2()))
             if ((_otherPos - _pos).magnitude() < (self.size/zoom) + (obj.size/zoom)):
                 return _pos
-                
 
 class simVars:
     def __init__(self, position=PG.Vector2(), velocity=PG.Vector2()):
