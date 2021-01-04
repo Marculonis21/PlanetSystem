@@ -165,8 +165,8 @@ class ObjPopup(UI):
                         inp.text = text
                     elif (event.key == PG.K_DELETE):
                         text = inp.text[:len(inp.text)-inp.cursor] + inp.text[len(inp.text)-inp.cursor+1:]
+                        if (text != inp.text): inp.cursor -= 1
                         inp.text = text
-                        inp.cursor -= 1
                     elif (event.key == PG.K_RETURN): 
                         inp.selected = False
                         if (inp.text == "" or inp.text == "-"): inp.SetText(0)
@@ -176,9 +176,13 @@ class ObjPopup(UI):
                     elif (event.key == PG.K_LEFT):
                         inp.cursor += 1
                         if (inp.cursor > len(inp.text)): inp.cursor = len(inp.text) 
+                        return "arrows"
                     elif (event.key == PG.K_RIGHT):
                         inp.cursor -= 1
                         if (inp.cursor < 0): inp.cursor = 0
+                        return "arrows"
+                    elif (event.key == PG.K_UP or event.key == PG.K_DOWN):
+                        return "arrows" 
 
                     # TAB - changing selected
                     elif (event.key == PG.K_TAB):
@@ -202,13 +206,10 @@ class ObjPopup(UI):
                             
                     # ALLOWED KEYS
                     elif (str(key) in "0123456789-."):
-
                         # MINUS
                         if (key == "-"):
                             text = "-"+inp.text
-                            if (len(text) > 1):
-                                if (text[0] == text[1] == "-"):
-                                    text = text[2:]
+                            if (len(text) > 1 and text[0] == text[1] == "-"): text = text[2:]
 
                             inp.SetText(text)
 
@@ -222,7 +223,8 @@ class ObjPopup(UI):
                                 
                         # NUMBERS
                         else:
-                            inp.text = inp.text[:len(inp.text)-inp.cursor] + str(key) + inp.text[len(inp.text)-inp.cursor:]
+                            if (len(inp.text) < 5): # Soft text len block (possible to go over with drag)
+                                inp.text = inp.text[:len(inp.text)-inp.cursor] + str(key) + inp.text[len(inp.text)-inp.cursor:]
 
 
                     # Final Text->Variable + value checks 
@@ -351,7 +353,7 @@ class RadioButton:
 class TopMenu(UI):
     def __init__(self):
         super().__init__()
-        self.itemPos = PG.Vector2(13,5)
+        self.itemPos = PG.Vector2(17,5)
         self.items = []
         self.inItems = [] 
         self.SELECTED = False
@@ -365,9 +367,9 @@ class TopMenu(UI):
         self.color = self.NORMAL_COLOR
 
     def Draw(self, screen, num):
-        pos = (15+80*num, 0)
+        pos = (15+90*num, 0)
 
-        self.rect = PG.Rect(15+80*num, 0, 65, self.rectHeight)
+        self.rect = PG.Rect(15+90*num, 0, 75, self.rectHeight)
         PG.draw.rect(screen, self.color, self.rect, border_bottom_right_radius=5, border_bottom_left_radius=5)
 
         super().Draw(screen, pos)
@@ -404,7 +406,7 @@ class TopMenu(UI):
                         if (other == self): continue
                         other.SELECTED = False
 
-                    if (self.items[0] == "Help"): return "help"
+                    if (self.items[0] == "About"): return "about"
 
 class MenuItem(UI):
     def __init__(self, text, pointer, shortcut="", scPos=PG.Vector2(), width=120):

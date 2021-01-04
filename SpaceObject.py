@@ -10,7 +10,6 @@ class Object:
     def __init__(self, startPosition, startVelocity, mass, _list, zoom):
         self.sPos = PG.Vector2(startPosition)
         self.sVel = PG.Vector2(startVelocity)
-
         self.mass = mass
 
         self.size = mass**(MASS2SIZE) + 10
@@ -61,21 +60,16 @@ class Object:
             self.simUpdate = True
 
     def ChangeStartPos(self, move, movespeed):
-        if (move[0]):
-            self.sPos += PG.Vector2(0, -movespeed)
-        if (move[1]):
-            self.sPos += PG.Vector2(0, +movespeed)
-        if (move[2]):
-            self.sPos += PG.Vector2(-movespeed, 0)
-        if (move[3]):
-            self.sPos += PG.Vector2(+movespeed, 0)
+        if (move[0]): self.sPos += PG.Vector2(0, -movespeed)
+        if (move[1]): self.sPos += PG.Vector2(0, +movespeed)
+        if (move[2]): self.sPos += PG.Vector2(-movespeed, 0)
+        if (move[3]): self.sPos += PG.Vector2(+movespeed, 0)
             
         if (move[0] or move[1] or move[2] or move[3]):
             self.ResetSteps()
 
     def SetMass(self, mass):
-        if (mass <= 0):
-            mass = 1
+        if (mass <= 0): mass = 1
             
         self.mass = mass
         self.size = mass**(MASS2SIZE) + 10
@@ -93,10 +87,8 @@ class Object:
         return (int(pos.x),int(pos.y))
 
     def DrawSimPath(self, screen, offset, zoom, forwardSteps, paused, TIMESTEP, others):
-        if (paused and TIMESTEP == 0):
-            s = 0
-        else: 
-            s = max(0, len(self.simSteps) - forwardSteps//4)
+        if (paused and TIMESTEP == 0): s = 0
+        else: s = max(0, len(self.simSteps) - forwardSteps//4)
                 
         for step in range(s, len(self.simSteps), forwardSteps//100):
             p = self.simSteps[step].pos+offset

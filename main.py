@@ -27,7 +27,7 @@ PAUSED = True
 class DState(Enum):
     SIM = 1
     LOAD = 2
-    HELP = 3
+    ABOUT = 3
 
 DRAWSTATE = DState.SIM
 
@@ -57,6 +57,7 @@ topBarSelected = False
 
 HEADER = PG.font.SysFont('Arial', 35, False, False)
 FONT = PG.font.SysFont('Arial', 20, False, False)
+SMALL = PG.font.SysFont('Arial', 14, False, False)
 
 #CONSTANTS
 FPS = 30 
@@ -78,20 +79,25 @@ def spaceObjectDrawing(): # Drawing space objects and its paths
             PG.draw.circle(screen, PG.Color(100,100,100), pos, int(obj.size/camZOOM)+10, 1)
         PG.draw.circle(screen, obj.color, pos, int(obj.size/camZOOM))
 
+loadSIndex = 0
 fDraw = False
 def loadDrawing(screen): # Drawing Load menu
-    global DRAWSTATE, fDraw
+    global DRAWSTATE, fDraw, loadSIndex
 
+    events = PG.event.get()
+
+    # Main rect drawing and dimensios
     mainRect = PG.Rect(WIDTH//8, HEIGHT//10, 6*WIDTH//8, 5*HEIGHT//6)
     PG.draw.rect(screen, PG.Color(40,40,40), mainRect, border_radius=20)
+
+    zero = PG.Vector2(WIDTH//8, HEIGHT//10)
+    width = PG.Vector2(6*WIDTH//8, 0) 
+    height = PG.Vector2(0, 5*HEIGHT//6) 
 
     if not (mainRect.collidepoint(PG.mouse.get_pos())) and (fDraw): DRAWSTATE = DState.SIM
     fDraw = True
 
-    zero = PG.Vector2(WIDTH//8, HEIGHT//10)
-    width = PG.Vector2(6*WIDTH//8, 0) 
-    height = PG.Vector2(0, 4*HEIGHT//6) 
-
+    # File loading
     text = HEADER.render("SAVE FILES", True, PG.Color("gray"))
     screen.blit(text , PG.Vector2(width.x//2 - 100, 10) + zero)
 
@@ -99,10 +105,44 @@ def loadDrawing(screen): # Drawing Load menu
     saves = sorted([f for f in files if ".sim" in f])
     imgs =  sorted([f for f in files if ".png" in f])
 
-    events = PG.event.get()
-    sIndex = 0 
-    for idx, (save, img) in enumerate(zip(saves, imgs)):
-        index = sIndex + idx
+    # Arrow drawing
+    arrowUp   = HEADER.render("/\\", True, PG.Color("gray"))
+    arrowDown = HEADER.render("\\/", True, PG.Color("gray"))
+    arrowUpPos = PG.Vector2(width.x//2 - 45, height.y-45) + zero
+    arrowDownPos = PG.Vector2(width.x//2 + 15, height.y-45) + zero
+
+    UpRect = PG.Rect(arrowUpPos-PG.Vector2(10,5), (40, 40), border_radius=3)
+    DownRect = PG.Rect(arrowDownPos-PG.Vector2(10,5), (40, 40), border_radius=3)
+
+    bg_color = PG.Color(30,30,30)
+    if not (loadSIndex == 0):
+        if (UpRect.collidepoint(PG.mouse.get_pos())):
+            bg_color = PG.Color(50,50,50)
+            for event in events: 
+                if (event.type == PG.MOUSEBUTTONDOWN): loadSIndex -= 1
+    else: arrowUp = HEADER.render("/\\", True, PG.Color(45,45,45)) 
+    PG.draw.rect(screen, bg_color, UpRect)
+
+    bg_color = PG.Color(30,30,30)
+    if not ((loadSIndex+1)*4 >= len(saves)):
+        if (DownRect.collidepoint(PG.mouse.get_pos())): 
+            bg_color = PG.Color(50,50,50)
+            for event in events: 
+                if (event.type == PG.MOUSEBUTTONDOWN): loadSIndex += 1
+               
+               
+    else: arrowDown = HEADER.render("\\/", True, PG.Color(40,40,40))
+    PG.draw.rect(screen, bg_color, DownRect)
+
+    screen.blit(arrowUp, arrowUpPos)
+    screen.blit(arrowDown, arrowDownPos)
+
+    _zip = list(zip(saves, imgs))
+    for idx in range(loadSIndex*4, len(_zip)):
+        save = _zip[idx][0]
+        img = _zip[idx][1]
+
+        index = idx - loadSIndex*4
         if (index == 4): break
             
         pos = zero+PG.Vector2((width.x//2)*(index%2)+25, 75+280*(index//2))
@@ -135,10 +175,13 @@ def loadDrawing(screen): # Drawing Load menu
                 if (event.type == PG.MOUSEBUTTONDOWN and delrect.collidepoint(event.pos)):
                     os.remove(f"./.saves/{save}")
                     os.remove(f"./.saves/{img}")
+
+                    if (loadSIndex > 0 and (len(saves)-1)%4 == 0):
+                        loadSIndex -= 1
                     return
 
                 if (event.type == PG.MOUSEBUTTONDOWN and rect.collidepoint(event.pos)):
-                    global objectList, camXY, camZOOM, staticObj
+                    global objectList, camXY, camZOOM, staticObj, TIMESTEP, SIMSPEED, SELECTED
 
                     load = pickle.load(open(f"./.saves/{save}", "rb"))
                     objectList, camXY, camZOOM, staticObj = load
@@ -149,6 +192,53 @@ def loadDrawing(screen): # Drawing Load menu
                     DRAWSTATE = DState.SIM
                     break
 
+def aboutDrawing(screen): # Drawing about menu
+    global DRAWSTATE, fDraw
+
+    mainRect = PG.Rect(WIDTH//8, HEIGHT//10, 6*WIDTH//8, 5*HEIGHT//6)
+    PG.draw.rect(screen, PG.Color(40,40,40), mainRect, border_radius=20)
+
+    zero = PG.Vector2(WIDTH//8, HEIGHT//10)
+    width = PG.Vector2(6*WIDTH//8, 0) 
+    height = PG.Vector2(0, 4*HEIGHT//6) 
+
+    if not (mainRect.collidepoint(PG.mouse.get_pos())) and (fDraw): DRAWSTATE = DState.SIM
+    fDraw = True
+
+    header = HEADER.render("ABOUT", True, PG.Color("gray"))
+    screen.blit(header, PG.Vector2(30, 40) + zero)
+
+    first = ["The app was developed as a final project for subject Programming 1 - MFF UK",
+             "by Marek Bečvář (ZS 2020/21)."]
+
+    text = ["  This application gives user the possibility to design",
+            "  his own planetary system and to see it work in ",
+            "  proper physical simulation.",
+            "",
+            "Controls:",
+            "  Left mouse button (free space) - Create planet",
+            "  Left mouse button (planet) - Show planet properties", 
+            "", 
+            "  Right mouse button (planet) - Remove planet", 
+            "", 
+            "  Arrow keys (when planet selected) - Move planet in space", 
+            "", 
+            "  WSAD keys - Camera movement", 
+            "  Mousewheel - Camera zoom", 
+            "", 
+            "  Space - Start simulation", 
+            "  R - Reset simulation to start", 
+            ]
+
+
+    for line in range(len(first)):
+        mainText = SMALL.render(first[line], True, PG.Color("gray"))
+        screen.blit(mainText, PG.Vector2(30,600+line*25) + zero)
+
+    for line in range(len(text)):
+        mainText = FONT.render(text[line], True, PG.Color("gray"))
+        screen.blit(mainText, PG.Vector2(30,90+line*25) + zero)
+    
 def step(): # SimStep update
     global TIMESTEP
     sim(step_size)
@@ -182,11 +272,35 @@ def sim(steps=1, reset=False): # Simulation
 
             obj.simSteps.append(SO.simVars(nPos,nVel))
 
-        for obj in objectList:
-            if (obj.Collides(s, objectList, camZOOM) != None):
-                collision = True
-                break
+        if (reset):
+            for obj in objectList:
+                if (obj.Collides(s, objectList, camZOOM) != None):
+                    collision = True
+                    break
                 
+def CheckSimUpdate(): # Check if objects need sim
+    global objectList, staticObj
+
+    found = False
+    for obj in objectList:
+        if (obj.static):
+            staticObj = obj
+            found = True
+            break
+
+    if not (found): staticObj = None
+
+    if not (staticObj == None):
+        del objectList[objectList.index(staticObj)]
+        objectList.insert(0, staticObj)
+
+    for obj in objectList:
+        if (obj.simUpdate):
+            sim(forwardSimSteps, True)
+
+            for _obj in objectList:
+                _obj.simUpdate = False
+
 WSADKeysPressed = [False,False,False,False] 
 def WSADmoveKeys(event): # Cam movement keys
     global WSADKeysPressed
@@ -218,7 +332,7 @@ def camMovement(): # Cam movement
         if (WSADKeysPressed[3]): camXY[0] -= camMoveSpeed
 
 ARROWKeysPressed = [False,False,False,False] 
-def arrowKeys(event): # Object movement keys
+def ARROWmoveKeys(event): # Object movement keys
     global ARROWKeysPressed
     if (event.type == PG.KEYUP):
         if event.key == PG.K_UP:
@@ -241,17 +355,20 @@ def arrowKeys(event): # Object movement keys
             ARROWKeysPressed[3] = True
 
 def shortcutEvents(event): # Key shortcuts
-    global PAUSED, SELECTED, camXY, SIMSPEED, step_size
+    global PAUSED, TIMESTEP, SELECTED, camXY, SIMSPEED, step_size, topBar
 
     if (event.key == PG.K_SPACE):
         PAUSED = not PAUSED
         SELECTED = None
 
     elif (event.key == PG.K_r): 
+        PAUSED = True
         TIMESTEP = 0
+        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+
+        for obj in objectList: obj.ResetSteps()
     
     elif (event.key == PG.K_GREATER) or (event.key == PG.K_PERIOD and PG.key.get_mods() & PG.KMOD_SHIFT):
-        global topBar
         SIMSPEED += 0.25
         if (SIMSPEED > 5): SIMSPEED = 5
 
@@ -332,31 +449,8 @@ def mouseClick(event): # Mouse click events - add, select/deselect, remove
 
                     return
 
-def CheckSimUpdate(): # Check if objects need sim
-    global objectList, staticObj
-
-    found = False
-    for obj in objectList:
-        if (obj.static):
-            staticObj = obj
-            found = True
-            break
-
-    if not (found): staticObj = None
-
-    if not (staticObj == None):
-        del objectList[objectList.index(staticObj)]
-        objectList.insert(0, staticObj)
-
-    for obj in objectList:
-        if (obj.simUpdate):
-            sim(forwardSimSteps, True)
-
-            for _obj in objectList:
-                _obj.simUpdate = False
-    
 def TopBarHandling(out): # Top menu bar logic
-    global PAUSED, TIMESTEP, SELECTED, camXY, camZOOM, staticObj, objectList, SIMSPEED, step_size, topBar, DRAWSTATE
+    global PAUSED, TIMESTEP, SELECTED, camXY, camZOOM, staticObj, objectList, SIMSPEED, step_size, topBar, DRAWSTATE, fDraw, loadSIndex
     if (out == None): return
 
     if (out == "newFile"):
@@ -375,25 +469,23 @@ def TopBarHandling(out): # Top menu bar logic
         try: os.mkdir("./.saves")
         except FileExistsError: pass
         
-        files = sorted([f for f in os.listdir("./.saves") if ".sim" in f])
+        #*asymptotic time complexity cries*
+        files = sorted([f for f in os.listdir("./.saves") if "save" in f and ".sim" in f]) 
 
         index = 1
         for f in files: 
             if (int(f.split('_')[1].split('.')[0]) == index): index += 1 
             else: break
                 
-        num = index
-
-        pickle.dump((objectList, camXY, camZOOM, staticObj), open("./.saves/save_{}.sim".format(num), "wb"))
+        pickle.dump((objectList, camXY, camZOOM, staticObj), open("./.saves/save_{}.sim".format(index), "wb"))
         SCREENSHOT = True
-        SSNum = num
+        SSNum = index
         topBar[0].SELECTED = False
 
 
     elif (out == "loadFile"):
         try: os.mkdir("./.saves")
         except FileExistsError: pass
-        global fDraw
 
         PAUSED = True
         SELECTED = None
@@ -401,7 +493,7 @@ def TopBarHandling(out): # Top menu bar logic
         DRAWSTATE = DState.LOAD
         topBar[0].SELECTED = False
         fDraw = False
-
+        loadSIndex = 0
 
     elif (out == "sim_speedUP"):
         SIMSPEED += 0.25
@@ -421,26 +513,42 @@ def TopBarHandling(out): # Top menu bar logic
 
     elif (out == "sim_pause"):
         PAUSED = not PAUSED
+        topBar[1].SELECTED = False
 
-    elif (out == "help"):
-        pass
+    elif (out == "sim_reset"):
+        PAUSED = True
+        TIMESTEP = 0
+        topBar[1].SELECTED = False
+        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+
+        for obj in objectList: obj.ResetSteps()
+            
+
+    elif (out == "about"):
+        PAUSED = True
+        SELECTED = None
+        PG.mouse.set_pos(WIDTH//2,HEIGHT//2)
+        DRAWSTATE = DState.ABOUT
+        fDraw = False
 
 def SetupTopBar(): # Setting up top menu bar (at the start)
     global topBar
     topBar = [UI.TopMenu() for m in range(3)]
     topBar[0].items = ["Files"]
-    topBar[0].inItems = [UI.MenuItem("New...", 'newFile'), 
-                         UI.MenuItem("Save", 'saveFile'), 
-                         UI.MenuItem("Load", 'loadFile')]
+    topBar[0].inItems = [UI.MenuItem("New...", 'newFile', width=90), 
+                         UI.MenuItem("Save",   'saveFile', width=90), 
+                         UI.MenuItem("Load",   'loadFile', width=90)]
 
     topBar[1].items = ["Sim"]
+    topBar[1].itemPos = PG.Vector2(21, 5)
     topBar[1].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130),
                          UI.MenuItem("Speed  +",   "sim_speedUP",   ">", (130,5), width=150),
                          UI.MenuItem("Speed  -",   "sim_speedDOWN", "<", (130,5), width=150),
-                         UI.MenuItem("Reset",      "sim_Reset",     "r",     (130,5), width=150),
+                         UI.MenuItem("Reset",      "sim_reset",     "r",     (130,5), width=150),
                          UI.MenuItem("Pause",      "sim_pause",     "space", (130,5), width=190)]
 
-    topBar[2].items = ["Help"]
+    topBar[2].items = ["About"]
+    topBar[2].itemPos = PG.Vector2(13, 5)
 
 SetupTopBar()
 while True:
@@ -458,27 +566,34 @@ while True:
 
     if (SELECTED and PAUSED): 
         popup.Draw(screen, SELECTED) # Drawing object popup menu 
-        if (TIMESTEP == 0): SELECTED.ChangeStartPos(WSADKeysPressed, 2) # Moving objects (if not in sim) 
+        if (TIMESTEP == 0): SELECTED.ChangeStartPos(ARROWKeysPressed, 2) # Moving objects (if not in sim) 
 
     # Drawing top bar items
     for index, item in enumerate(topBar):
         item.Draw(screen, index)
 
-    # Events on different DRAWSTATES - SIM/LOAD-screen/HELP-screen
+    # Events on different DRAWSTATES - SIM/LOAD-screen/ABOUT-screen
     if (DRAWSTATE == DState.SIM):
         camMovement() 
 
+        arrowsOnText = False
         # PYGAME EVENTS
         for event in PG.event.get():
             if (event.type == PG.QUIT): sys.exit()
             if (event.type == PG.KEYDOWN): shortcutEvents(event)
 
+            if (SELECTED and PAUSED): # If popup is active
+                out = popup.Event_handler(event, objectList)
+                arrowsOnText = True if out == "arrows" else False
+                    
+            for tb in topBar: TopBarHandling(tb.Event_hanlder(event, topBar)) # Events on top bar
+
             mouseClick(event)
             mouseWheel(event)
             WSADmoveKeys(event)
+            if not (arrowsOnText): ARROWmoveKeys(event)
+               
            
-            if (SELECTED and PAUSED): popup.Event_handler(event, objectList) # If popup is active
-            for tb in topBar: TopBarHandling(tb.Event_hanlder(event, topBar)) # Events on top bar
 
         # Physics step - stable physics steps
         if not (PAUSED):
@@ -490,8 +605,8 @@ while True:
     elif (DRAWSTATE == DState.LOAD): 
         loadDrawing(screen)
 
-    elif (DRAWSTATE == DState.HELP): 
-        helpDrawing(screen)
+    elif (DRAWSTATE == DState.ABOUT): 
+        aboutDrawing(screen)
         for event in PG.event.get():
             if (event.type == PG.QUIT): sys.exit()
         
