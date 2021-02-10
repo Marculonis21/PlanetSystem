@@ -159,30 +159,33 @@ def loadDrawing(screen): # Drawing Load menu
         screen.blit(name, pos+PG.Vector2(25,222))
         screen.blit(_img, pos+PG.Vector2(25,15))
 
-        delpos = pos + PG.Vector2(rect.width, 222) - PG.Vector2(85,0)
-        delrect = PG.Rect(delpos.x, delpos.y, 60, 25)
-        delete = FONT.render("delete", True, PG.Color("white"))
+        if not ("preset" in save):
+            delrect = PG.Rect(delpos.x, delpos.y, 60, 25)
+            delete = FONT.render("delete", True, PG.Color("white"))
 
-        del_color = PG.Color("red4")
-        if (delrect.collidepoint(PG.mouse.get_pos())): del_color = PG.Color("red")
+            del_color = PG.Color("red4")
+            if (delrect.collidepoint(PG.mouse.get_pos())): del_color = PG.Color("red")
 
-        PG.draw.rect(screen, del_color, delrect)
-        screen.blit(delete, delpos+PG.Vector2(3,2))
+            PG.draw.rect(screen, del_color, delrect)
+            screen.blit(delete, delpos+PG.Vector2(3,2))
+
 
         for event in events:
             if (event.type == PG.QUIT): sys.exit()
             if (rect.collidepoint(PG.mouse.get_pos())):
-                if (event.type == PG.MOUSEBUTTONDOWN and delrect.collidepoint(event.pos)):
-                    os.remove(f"./.saves/{save}")
-                    os.remove(f"./.saves/{img}")
 
-                    if (loadSIndex > 0 and (len(saves)-1)%4 == 0):
-                        loadSIndex -= 1
-                    return
+                if not ("preset" in save):
+                    if (event.type == PG.MOUSEBUTTONDOWN and delrect.collidepoint(event.pos)):
+                        os.remove(f"./.saves/{save}")
+                        os.remove(f"./.saves/{img}")
+
+                        if (loadSIndex > 0 and (len(saves)-1)%4 == 0):
+                            loadSIndex -= 1
+                        return
 
                 if (event.type == PG.MOUSEBUTTONDOWN and rect.collidepoint(event.pos)):
-                    global objectList, camXY, camZOOM, staticObj, TIMESTEP, SIMSPEED, SELECTED
 
+                    global objectList, camXY, camZOOM, staticObj, TIMESTEP, SIMSPEED, SELECTED
                     load = pickle.load(open(f"./.saves/{save}", "rb"))
                     objectList, camXY, camZOOM, staticObj = load
                     TIMESTEP = 0
@@ -592,8 +595,6 @@ while True:
             mouseWheel(event)
             WSADmoveKeys(event)
             if not (arrowsOnText): ARROWmoveKeys(event)
-               
-           
 
         # Physics step - stable physics steps
         if not (PAUSED):
