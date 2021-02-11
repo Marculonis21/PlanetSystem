@@ -592,7 +592,6 @@ SetupTopBar()
 while True: # Main app loop - ends on Pygame quit event
     backgroundDrawing()
 
-    print(PAUSED and TIMESTEP == 0)
     # While editing always check for needed sim updates
     if (PAUSED and TIMESTEP == 0): CheckSimUpdate()
 
