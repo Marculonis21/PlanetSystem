@@ -167,6 +167,7 @@ class ObjPopup(UI):
                         text = inp.text[:len(inp.text)-inp.cursor] + inp.text[len(inp.text)-inp.cursor+1:]
                         if (text != inp.text): inp.cursor -= 1
                         inp.text = text
+                        return "delete"
                     elif (event.key == PG.K_RETURN): 
                         inp.selected = False
                         if (inp.text == "" or inp.text == "-"): inp.SetText(0)

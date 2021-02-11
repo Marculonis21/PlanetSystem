@@ -13,4 +13,5 @@ Projekt, vytvořit app v Pythonu s nějakou lib (asi pygame), kde si uživatel b
 * [x] vizualizace průběhu simulace
   - * [x] zpětná - ukázat, kudy se pohybovaly
   - * [x] budoucí - vhodné pro určení vlastností objektů (*ukázat jak se bude trajektorie vyvíjet v závislosti na vlastnostech objektu*)  
-  - * [ ] static na jeden objekt aby se vše pohybovalo kolem něho
+  - * [x] static na jeden objekt aby se vše pohybovalo kolem něho
+* [x] Info, about menu

@@ -5,7 +5,6 @@ import pygame as PG
 import random
 
 MASS2SIZE = 1/3
-
 class Object:
     def __init__(self, startPosition, startVelocity, mass, _list, zoom):
         self.sPos = PG.Vector2(startPosition)
@@ -13,6 +12,8 @@ class Object:
         self.mass = mass
 
         self.size = mass**(MASS2SIZE) + 10
+
+        # Default color is random (can be changed)
         self.color = PG.Color(random.randint(0,255),
                               random.randint(0,255),
                               random.randint(0,255))
@@ -22,15 +23,20 @@ class Object:
         self.simSteps = []
         self.ResetSteps()
 
-    def ResetSteps(self):    
+    def ResetSteps(self):
+        # Set to default values (startPosition, startVelocity)
         self.simSteps = [simVars(self.sPos, self.sVel)]
         self.simUpdate = True
 
-    def ChangeCoordinates(self, b1, b2, paused, forwardSteps): # LINGEBRA - Převod mezi souřadnicemi v různých bázích
+    def ChangeCoordinates(self, b1, b2, TIMESTEP, paused, forwardSteps): 
+        # Used for zoom function
+        # Linear Algebra for the win - change coordinates with respect basis
         self.sPos = self.__changeCoords__(b1, b2, self.sPos)
         self.simSteps[0] = simVars(self.sPos, self.sVel)
-        if (paused): self.ResetSteps()
 
+        if (paused and TIMESTEP == 0): self.ResetSteps()
+
+        # For zooming while sim is running - change coorinates on last N steps
         s = max(0, len(self.simSteps) - forwardSteps//4)
         for step in range(s, len(self.simSteps)):
             _pos = self.simSteps[step].pos
@@ -84,25 +90,33 @@ class Object:
 
     def GetStepPos(self, idx, translate):
         pos = self.simSteps[idx].pos + translate
-        return (int(pos.x),int(pos.y))
+        return (int(pos.x),int(pos.y)) # Pygame needs ints (pixels)
 
     def DrawSimPath(self, screen, offset, zoom, forwardSteps, paused, TIMESTEP, others):
-        if (paused and TIMESTEP == 0): s = 0
+        # For drawing future and past sim steps
+        # s = start index -> 0 or N steps from the end
+        if (paused and TIMESTEP == 0): s = 0 
         else: s = max(0, len(self.simSteps) - forwardSteps//4)
                 
+        # Check steps from s to end (not all -> saves time + makes nice
+        # graphics - dotted line) and draw points on their positions
         for step in range(s, len(self.simSteps), forwardSteps//100):
             p = self.simSteps[step].pos+offset
             PG.draw.circle(screen, self.color, p, 1)
 
+        # Check if last step didn't collide (if collision occures, it has to be
+        # on last step) 
         colPos = self.Collides(len(self.simSteps)-1, others, zoom)
 
         if (colPos != None):
             PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size/zoom)
 
     def Contains(self, pos, zoom):
+        # Constains function for mouse inputs
         if ((self.sPos - pos).magnitude() <= self.size/zoom): return True
 
     def Collides(self, TIMESTEP, others, zoom):
+        # Collides for collision checks
         _pos = PG.Vector2(self.GetStepPos(TIMESTEP,PG.Vector2()))
 
         for obj in others:
@@ -112,6 +126,7 @@ class Object:
             if ((_otherPos - _pos).magnitude() < (self.size/zoom) + (obj.size/zoom)):
                 return _pos
 
+# Class for easier storing of physics step data
 class simVars:
     def __init__(self, position=PG.Vector2(), velocity=PG.Vector2()):
         self.pos = PG.Vector2(position)
