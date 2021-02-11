@@ -315,6 +315,7 @@ def CheckSimUpdate(): # Checking if objects need new sim update (saves a lot)
     # Checking simUpdate variable on objects
     for obj in objectList:
         if (obj.simUpdate):
+            TIMESTEP = 0
             sim(forwardSimSteps, True)
 
             for _obj in objectList:
@@ -437,24 +438,25 @@ def mouseClick(event): # Mouse click events - add, select/deselect, remove
     global SELECTED, PAUSED, TIMESTEP
 
     if (event.type == PG.MOUSEBUTTONDOWN): # <- handle only one press (no continuous)
+        pos = PG.mouse.get_pos()
 
         # LEFT CLICK
         if (PG.mouse.get_pressed()[0]):
-            pos = PG.mouse.get_pos() - camXY
-
             # Test for mouse over object hover -> SELECT
             for obj in objectList: 
-                if (obj.Contains(pos, camZOOM)):
+                if (obj.Contains(pos, TIMESTEP, camXY, camZOOM)):
                     SELECTED = obj
                     popup.inputs = []
 
+                    TIMESTEP = 0
                     PAUSED = True
                     return
             
             # Else (free space) add object to mouse pos -> ADD
             c = screen.get_at(PG.mouse.get_pos()) 
             if not (SELECTED) and (c == BGCOLOR):
-                objectList.append(SO.Object(pos, [0,0], 1000, objectList, camZOOM))
+                # pos - camXY = shown mouse position without translation
+                objectList.append(SO.Object(pos - camXY, [0,0], 1000, objectList, camZOOM))
 
                 TIMESTEP = 0
                 PAUSED = True
@@ -465,11 +467,9 @@ def mouseClick(event): # Mouse click events - add, select/deselect, remove
 
         # RIGHT CLICK
         if (PG.mouse.get_pressed()[2]):
-            pos = PG.mouse.get_pos() - camXY
-
             # Click on object -> REMOVE
             for obj in objectList: 
-                if (obj.Contains(pos, camZOOM)):
+                if (obj.Contains(pos, TIMESTEP, camXY, camZOOM)):
                     global staticObj
                     if (obj == staticObj): staticObj = None
 
@@ -567,19 +567,23 @@ def TopBarHandling(out): # Top menu bar logic
 
 def SetupTopBar(): # Setting up top menu bar (at the start)
     global topBar
+
     topBar = [UI.TopMenu() for m in range(3)]
     topBar[0].items = ["Files"]
+    # MenuItem class - (text, pointer, shortcut, shortcut offset, width)
     topBar[0].inItems = [UI.MenuItem("New...", 'newFile',  width=90), 
                          UI.MenuItem("Save",   'saveFile', width=90), 
                          UI.MenuItem("Load",   'loadFile', width=90)]
+    topBar[0].borderRect = PG.Rect(0,0,120,130)
 
     topBar[1].items = ["Sim"]
     topBar[1].itemPos = PG.Vector2(21, 5)
-    topBar[1].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED), None,              width=130),
+    topBar[1].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED),                    width=130),
                          UI.MenuItem("Speed  +",   "sim_speedUP",   ">",     (130,5), width=150),
                          UI.MenuItem("Speed  -",   "sim_speedDOWN", "<",     (130,5), width=150),
                          UI.MenuItem("Reset",      "sim_reset",     "r",     (130,5), width=150),
                          UI.MenuItem("Pause",      "sim_pause",     "space", (130,5), width=190)]
+    topBar[1].borderRect = PG.Rect(90,0,230,190)
 
     topBar[2].items = ["About"]
     topBar[2].itemPos = PG.Vector2(13, 5)
@@ -588,6 +592,7 @@ SetupTopBar()
 while True: # Main app loop - ends on Pygame quit event
     backgroundDrawing()
 
+    print(PAUSED and TIMESTEP == 0)
     # While editing always check for needed sim updates
     if (PAUSED and TIMESTEP == 0): CheckSimUpdate()
 
@@ -613,6 +618,7 @@ while True: # Main app loop - ends on Pygame quit event
 
         # PYGAME EVENTS
         arrowsOnText = False
+        out = None
         for event in PG.event.get():
             if (event.type == PG.QUIT): sys.exit()
             if (SELECTED and PAUSED): # If popup is active

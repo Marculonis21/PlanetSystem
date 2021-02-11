@@ -111,9 +111,10 @@ class Object:
         if (colPos != None):
             PG.draw.circle(screen, PG.Color("red"), colPos+offset, self.size/zoom)
 
-    def Contains(self, pos, zoom):
+    def Contains(self, pos, TIMESTEP, translate, zoom):
         # Constains function for mouse inputs
-        if ((self.sPos - pos).magnitude() <= self.size/zoom): return True
+        thisPos = PG.Vector2(self.GetStepPos(TIMESTEP, translate))
+        if ((thisPos - pos).magnitude() <= self.size/zoom): return True
 
     def Collides(self, TIMESTEP, others, zoom):
         # Collides for collision checks

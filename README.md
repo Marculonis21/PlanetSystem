@@ -2,7 +2,7 @@
 
 # PlanetSystem
 
-Projekt, vytvořit app v Pythonu s nějakou lib (asi pygame), kde si uživatel bude moct vytvořit vlastní planetární systém a pozorovat jejich simulaci (upravovat ji) ve 2D.
+Projekt, vytvořit app v Pythonu + Pygame, kde si uživatel bude moci vytvořit vlastní planetární systémy, pozorovat jejich simulaci, a dále ji upravovat (2D).
 
 # WIP:
 * [x] 2D grafické rozhraní
@@ -14,4 +14,5 @@ Projekt, vytvořit app v Pythonu s nějakou lib (asi pygame), kde si uživatel b
   - * [x] zpětná - ukázat, kudy se pohybovaly
   - * [x] budoucí - vhodné pro určení vlastností objektů (*ukázat jak se bude trajektorie vyvíjet v závislosti na vlastnostech objektu*)  
   - * [x] static na jeden objekt aby se vše pohybovalo kolem něho
+* [x] Topbar tlačítka s funkcemi
 * [x] Info, about menu
