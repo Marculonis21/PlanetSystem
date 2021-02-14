@@ -18,11 +18,13 @@
 \newcommand{\xmark}{\ding{55}}
 
 \renewcommand{\contentsname}{Obsah}
+% \renewcommand{\thesection}{\Roman{section}.}
 \renewcommand{\thesection}{\Roman{section}}
 
 \titleformat{\section}
 {\Large\bfseries}
-{\Roman{section}.}
+% {\Roman{section}.}
+{\thesection}
 {0.5em}
 {}
 
@@ -119,5 +121,6 @@ těchto zdrojích:\\
 Po nainstalování potřebných knihoven je již program plně funkční a spustitelný
 souborem \textbf{PlanetSystem.py}.
 
+\section{Ovládání}
 
 \end{document}
