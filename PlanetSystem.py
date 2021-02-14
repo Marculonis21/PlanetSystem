@@ -178,6 +178,7 @@ def loadDrawing(screen): # Drawing/Logic LOADMENU
 
         # Button logic
         if not ("preset" in save): # If delete button should be drawn (presets can't be removed)
+            delpos = pos + PG.Vector2(rect.width, 222) - PG.Vector2(85,0)
             delrect = PG.Rect(delpos.x, delpos.y, 60, 25)
             delete = FONT.render("delete", True, PG.Color("white"))
 
@@ -406,11 +407,14 @@ def ARROWmoveKeys(event): # Object movement keys
 def shortcutEvents(event, mods): # Key shortcuts
     global PAUSED, TIMESTEP, SELECTED, camXY, SIMSPEED, step_size, topBar
 
-    if (event.key == PG.K_SPACE): # PLAY/PAUSE
+    if (event.key == PG.K_ESCAPE): # QUIT
+        quit()
+
+    elif (event.key == PG.K_SPACE): # PLAY/PAUSE
         PAUSED = not PAUSED
         SELECTED = None
 
-    if (event.key == PG.K_DELETE and mods != "delete"): # REMOVE SELECTED
+    elif (event.key == PG.K_DELETE and mods != "delete"): # REMOVE SELECTED
         if not (SELECTED == None):
             global staticObj
             if (SELECTED == staticObj): staticObj = None
@@ -692,9 +696,6 @@ while True: # Main app loop - ends on Pygame quit event
                 out = popup.Event_handler(event, objectList)
                 arrowsOnText = True if out == "arrows" else False
             if (event.type == PG.KEYDOWN): shortcutEvents(event, out)
-            if (event.type == PG.KEYDOWN):
-                if (event.key == PG.K_t):
-                    quit()
             
             # Events on top bar
             for tb in topBar: TopBarHandling(tb.Event_hanlder(event, topBar)) 

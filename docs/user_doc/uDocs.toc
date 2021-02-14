@@ -4,3 +4,15 @@
 \contentsline {paragraph}{Python}{3}{paragraph*.2}%
 \contentsline {paragraph}{Potřebné knihovny}{3}{paragraph*.3}%
 \contentsline {section}{\numberline {III}Ovládání}{4}{section.3}%
+\contentsline {paragraph}{Spuštění}{4}{paragraph*.4}%
+\contentsline {subsection}{\numberline {i}Editování objektů}{5}{subsection.3.1}%
+\contentsline {paragraph}{}{5}{paragraph*.5}%
+\contentsline {subsection}{\numberline {ii}Ovládání simulace/kamery}{6}{subsection.3.2}%
+\contentsline {paragraph}{}{6}{paragraph*.6}%
+\contentsline {subsection}{\numberline {iii}Panel nástrojů}{6}{subsection.3.3}%
+\contentsline {paragraph}{}{6}{paragraph*.7}%
+\contentsline {paragraph}{Files}{6}{paragraph*.8}%
+\contentsline {paragraph}{Window}{6}{paragraph*.9}%
+\contentsline {paragraph}{Sim}{6}{paragraph*.10}%
+\contentsline {paragraph}{About}{6}{paragraph*.11}%
+\contentsline {subsection}{\numberline {iv}Shrnutí ovládacích prvků}{7}{subsection.3.4}%

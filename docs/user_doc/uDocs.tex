@@ -1,9 +1,12 @@
 \documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
 \usepackage{titling}
 \usepackage{titlesec}
 \usepackage{amssymb}
 \usepackage{pifont}
-
+\usepackage{graphicx}
+\graphicspath{ {./pics/} }
 
 \usepackage{hyperref}
 \hypersetup{
@@ -16,10 +19,12 @@
 
 \newcommand{\cmark}{\ding{51}}
 \newcommand{\xmark}{\ding{55}}
+\newcommand{\pgm}{PlanetSystem.py}
 
 \renewcommand{\contentsname}{Obsah}
 % \renewcommand{\thesection}{\Roman{section}.}
 \renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\roman{subsection}}
 
 \titleformat{\section}
 {\Large\bfseries}
@@ -60,10 +65,10 @@
 
 \section{O programu} 
 \paragraph{}
-PlanetSystem je programem pro Windows/Linux umožnující uživateli ve 2D vytvářet vlastní
+PlanetSystem je programem pro Windows/Linux umožňující uživateli ve 2D vytvářet vlastní
 simulované planetární systémy. Simulace pracují se skutečnými fyzikálními
-závislostmi a vlastnostmi, které mohou být pro jednotlivá tělesa ve fázi
-\\editování upravována. To, jak jednotlivé změny ovlivňují celý systém, může pak
+závislostmi a vlastnostmi, které mohou být pro \\jednotlivá tělesa ve fázi
+editování upravována. To, jak jednotlivé změny ovlivňují celý systém, může pak
 uživatel sledovat v reálném čase v zobrazovacím okně.
 
 Oblíbené simulace je pak možné ukládat a zpětně načítat s pomocí vlastního
@@ -122,5 +127,119 @@ Po nainstalování potřebných knihoven je již program plně funkční a spust
 souborem \textbf{PlanetSystem.py}.
 
 \section{Ovládání}
+\paragraph{Spuštění}
+Pro spuštění programu je potřeba spustit hlavní soubor \\\pgm. Po tomto se
+spustí hlavní okno aplikace, ve kterém poběží všechny simulace.
+
+\vspace{0.5cm}
+\begin{center}
+\includegraphics[width=0.75\linewidth]{pics/p1_crop.png}
+\end{center}
+
+\newpage
+\subsection{Editování objektů}
+\paragraph{}
+K ovládání programu je potřeba klávesnice a myš s možností scrollování.
+Základní funkce je na levém tlačítku myši. Kliknutím do volného prostoru
+obrazovky vložíme na pozici kurzoru nový objekt (planetu). Kliknutím na
+libovolný objekt ho můžeme vybrat (pro znázorněný vybraného objektu je vždy
+daný objekt zvírazněn kružnicí kolem jeho obvodu) a tak otevřít \\editovací
+menu.  Zde můžeme měnit číselné hodnoty jako hmotnost, počáteční rychlost a pro
+vizuální úpravy i barvu objektu. \textbf{Číselné hodnoty lze upravovat jak zadáváním
+čísel přes klávesnici, tak stisknutím textového pole a tažením do strany.} Dále
+je možnost měnit jak bude vnímán prostor v simulaci (zaškrtnutí tlačítka
+\emph{Central object}), kde se bude vše pohybovat relativně vůči zvolenému
+centrálnímu objektu.
+
+\begin{center}
+\includegraphics[width=0.6\linewidth]{pics/p2_crop.png}
+\end{center}
+
+S využitím šipek na klávesnici je možné zvolený objekt posouvat v
+\\prostoru. Objekt pak můžeme odebrat kliknutím na něj pravým tlačítkem myši
+nebo vybráním objektu a stisknutím tlačítka delete.\\
+\linebreak
+Přidáváním planet a editování jejich startovních vlastností se okamžitě
+propočítává a program dopředu předpovídá trasu, kterou by podle fyzikálních
+pravidel těleso proletělo.
+
+\newpage
+\subsection{Ovládání simulace/kamery}
+\paragraph{}
+Při editování je simulace automaticky pozastavena. Spouštění a zastavonání může
+být řízeno klávesou mezerník (space). V průběhu je také možno měnit rychlost
+času v rozsahu hodnot rychlostí $0.25-5.0$ pomocí kláves $<$ zpomalení, $>$
+zrychlení.
+
+Pohyb hlavní kamery se ovládá pomocí směrových kláves WSAD. \\Pro přibližování a
+oddalování kamery se využívá kolečko myši (scroll).
+
+Z různých důvodů může být potřeba simulaci resetovat do původního stavu. To
+může být docíleno kliknutím do volého prostoru obrazovky (přidání tělesa
+resetuje průběh simulace), nebo zastavením simulace a stisknutí\\ klávesy R
+(návrat těles a kamery do původní polohy).
+
+\subsection{Panel nástrojů}
+\paragraph{}
+Všechny hlavní užitečné klávesové zkratky a příkazy jsou dále popsány v hlavním
+panelu na horním okraji obrazovky.
+
+\begin{center}
+\includegraphics[width=0.8\linewidth]{pics/p3_crop.png}
+\end{center}
+
+\paragraph{Files}
+Pod tlačítkem \emph{Files} lze najít funkce programu umožňující vytváření nového
+čistého souboru, ukládání a načítání vlastních simulací/ukázkových projektů.
+
+\paragraph{Window}
+Ve \emph{Window} se nachází možnosti nastavení velikosti obrazovky. Jiný způsob
+pro změnu velikosti obrazu uživatel v této chvíli nemá.
+
+\paragraph{Sim}
+Tlačíko \emph{Sim} je dalším způsobem jak zasahovat do průběhu simulace (měnit
+rychlost, zastavit/spustit, resetovat). Také pod ním jde vždy najít přesná
+aktuální rychlost simulace.
+
+\paragraph{About}
+V sekci \emph{About} je ještě jednou krátký popis programu, informace o
+projektu a autorovi a stručný seznam ovládacích prvků a užitečných zkratek.
+
+\pagebreak
+\subsection{Shrnutí ovládacích prvků}
+\begin{table}[h!]
+\centering
+\hspace*{-1.5cm}
+\resizebox{1\textwidth}{!}{\begin{tabular}[t]{ p{4cm} | p{8.5cm} } 
+    \toprule
+    \centering\textbf{Tlačítko} & \textbf{Stručný popis funkce}\\
+    \midrule
+    \multicolumn{2}{l}{\vspace{-0.1cm}\footnotesize\textbf{Objekty}}\\
+    \midrule
+    \centering\textbf{Levé tlačítko myši} & Přidávání a označování objektů v hlavním okně\\
+    \centering\textbf{Pravé tlačítko myši} & Odebrání objektu\\
+    \centering\textbf{Delete} & Odebrání označeného objektu\\
+    \centering\textbf{Šipky} & Pohyb označeným objektem v prostoru\\
+    \midrule
+    \multicolumn{2}{l}{\vspace{-0.1cm}\footnotesize\textbf{Kamera}}\\
+    \midrule
+    \centering\textbf{Kolečko myši} & Přibližování/oddalování kamery\\
+    \centering\textbf{WSAD} & Pohyb kamerou v prostoru\\
+    \midrule
+    \multicolumn{2}{l}{\vspace{-0.1cm}\footnotesize\textbf{Simulace}}\\
+    \midrule
+    \centering\textbf{Mezerník/Space} & Spuštění/zastavení simulace\\
+    \centering\textbf{R} & Resetování simulace do startovního nastavení\\
+    \centering\textbf{$>$} & Zrychlení simulace\\
+    \centering\textbf{$<$} & Zpomalení simulace\\
+    \midrule
+    \multicolumn{2}{l}{\vspace{-0.1cm}\footnotesize\textbf{Aplikace}}\\
+    \midrule
+    \centering\textbf{Escape} & Možné okamžité vypnutí aplikace\\
+    \bottomrule
+\end{tabular}}
+\end{table}
+
+
 
 \end{document}
