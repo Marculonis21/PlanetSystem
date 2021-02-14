@@ -375,11 +375,10 @@ def WSADmoveKeys(event): # Cam movement keys
             WSADKeysPressed[3] = True
 
 def camMovement(): # Cam movement
-    if not (SELECTED):
-        if (WSADKeysPressed[0]): camXY[1] += camMoveSpeed
-        if (WSADKeysPressed[1]): camXY[1] -= camMoveSpeed
-        if (WSADKeysPressed[2]): camXY[0] += camMoveSpeed
-        if (WSADKeysPressed[3]): camXY[0] -= camMoveSpeed
+    if (WSADKeysPressed[0]): camXY[1] += camMoveSpeed
+    if (WSADKeysPressed[1]): camXY[1] -= camMoveSpeed
+    if (WSADKeysPressed[2]): camXY[0] += camMoveSpeed
+    if (WSADKeysPressed[3]): camXY[0] -= camMoveSpeed
 
 ARROWKeysPressed = [False,False,False,False] 
 def ARROWmoveKeys(event): # Object movement keys

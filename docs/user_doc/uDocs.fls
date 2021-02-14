@@ -176,6 +176,13 @@ INPUT pics/p3_crop.png
 INPUT ./pics/p3_crop.png
 INPUT ./pics/p3_crop.png
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
+INPUT pics/p4_crop.png
+INPUT ./pics/p4_crop.png
+INPUT ./pics/p4_crop.png
+INPUT pics/p5_crop.png
+INPUT ./pics/p5_crop.png
+INPUT ./pics/p5_crop.png
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT uDocs.aux
 INPUT ./uDocs.out
 INPUT ./uDocs.out
@@ -187,5 +194,6 @@ INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb

@@ -163,6 +163,12 @@ Přidáváním planet a editování jejich startovních vlastností se okamžit�
 propočítává a program dopředu předpovídá trasu, kterou by podle fyzikálních
 pravidel těleso proletělo.
 
+\paragraph{Central object}
+Zapnutí vlastnosti \emph{Central object} na vybraném tělese \\znamená změnu
+výpočtu pohybu v celé simulaci. Jedná se o užitečnou funkci jak pro vytváření
+různých zajímavých jevů (speciálních orbit), tak pro \\vizualizaci pohybu
+ostatních těles relativně vůči zvolenému objektu.
+
 \newpage
 \subsection{Ovládání simulace/kamery}
 \paragraph{}
@@ -239,7 +245,58 @@ projektu a autorovi a stručný seznam ovládacích prvků a užitečných zkrat
     \bottomrule
 \end{tabular}}
 \end{table}
+\vspace{1cm}
 
+\section{Budoucnost programu}
+Ačkoli se již jedná o plnou, funkční verzi programu, jsou jistě věci, které
+bych osobně rád dodělávál a vylepšoval i nadále. Vedle celkové optimalizace
+(rychlejší funkčnost pro uživatele, jiný platforma než Python) by se řadila
+ještě třeba lokalizace jazyků, úprava celkového UI designu a zajištění co možná
+nejšiřší kompatibility bez ztráty funkčnosti. 
 
+\newpage
+\section{Ukázka}
+\paragraph{}
+Pro ukázku jsem vybral planetární systém s více objekty na různých orbitách a
+jedním středovým (nejtěžším objektem), viz obrázek.
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{pics/p4_crop.png}
+\end{center}
+
+Na obrázku výše je vidět celý systém pozastavený v režimu editování. V tomto
+stavu můžeme pozorovat startovní polohy všech těles. Zároveň můžeme na první
+pohled porovnávat tělesa dle hmotnosti (větší = hmotnější). Další důležitou
+informací jsou tečkovanou čarou naznačené trajektorie těles tak, jak se v
+simulaci budou pohybovat. Jak je vidět, každé těleso má svoji barvu, tu je
+možno v době editace upravovat.
+\pagebreak
+
+\begin{center}
+\includegraphics[width=0.9\linewidth]{pics/p5_crop.png}
+\end{center}
+
+Obrázek výše je pak ukázka funkce \emph{Central object}. Jedná se o tu
+samou simulaci jako v prvním obrázku, teď je ale za centrální objekt považován
+\\objekt červené barvy (pohyb všech objektů je počítán relativně vůči centrálnímu
+objektu - pozice červeného se s časem nemění).
+
+Na této vizualizaci můžeme pozorovat například jeden z důvodů proč Mikuláš
+Koperník přišel s teorií heliocentrické soustavy. \\Pozoroval, že planety kolem
+nás neobíhají po kružnicích (eliptických drahách), ale že dokonce někdy mohou
+tělesa na obloze provádět i jakýsi \emph{zpětný chod}. Jediným řešením tohoto
+jevu pak byla teorie heliocentrické soustavy.  \\V našem případě se můžeme
+podívat na zvolenou červenou planetu, která se ještě pořád považuje za střed
+vesmíru. Zde pak jde pozorovat, že modrá planeta, skutečně obíhající po
+orbitě kolem nejhmotnějšího růžového objektu (\emph{Slunce}), opravdu z našeho
+pohledu tvoří tyto pozorovatelné smyčky.
+\\\\
+\footnotesize Tento projekt je vždy dostupný v \emph{load} menu jako ukázkový.\\
+\rule{\linewidth}{1pt}
+\newpage
+
+\normalsize
+Za psychickou podporu v semestru, teplé jídlo, ubytování a pěkné \\pracovní
+prostředí, děkuji osazenstvu našeho domova.
 
 \end{document}
