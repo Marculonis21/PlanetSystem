@@ -1,0 +1,5 @@
+\contentsline {section}{\numberline {I}O programu}{3}{section.1}%
+\contentsline {paragraph}{}{3}{paragraph*.1}%
+\contentsline {section}{\numberline {II}Instalace}{3}{section.2}%
+\contentsline {paragraph}{Python}{3}{paragraph*.2}%
+\contentsline {paragraph}{Potřebné knihovny}{3}{paragraph*.3}%

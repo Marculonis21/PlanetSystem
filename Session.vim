@@ -14,22 +14,22 @@ inoremap <expr> <C-J> pumvisible() ? "\" : "\	"
 inoremap <silent> <expr> <Nul> coc#refresh()
 inoremap <C-N> :nohl
 inoremap <C-Y> :update
-snoremap <silent>  "_c
-nmap  h
 xmap  h
+nmap  h
+snoremap <silent>  "_c
 omap  h
 xnoremap <silent> 	 :call UltiSnips#SaveLastVisualSelection()gvs
 snoremap <silent> 	 :call UltiSnips#ExpandSnippetOrJump()
 map <NL> j
 map  k
 map  l
-vnoremap  :nohl
 nnoremap  :nohl
+vnoremap  :nohl
 onoremap  :nohl
 map  :NERDTreeToggle
 snoremap  "_c
-vnoremap  :update
 nnoremap  :update
+vnoremap  :update
 onoremap  :update
 vnoremap ,s :sort
 nnoremap ,a zM
@@ -59,6 +59,10 @@ nmap ySs <Plug>YSsurround
 nmap yss <Plug>Yssurround
 nmap yS <Plug>YSurround
 nmap ys <Plug>Ysurround
+nnoremap <C-Y> :update
+xmap <C-H> h
+nmap <C-H> h
+nnoremap <C-N> :nohl
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())
 snoremap <C-R> "_c
@@ -108,16 +112,12 @@ vnoremap <silent> <Plug>(coc-range-select-backward) :call       CocActionAsync
 vnoremap <silent> <Plug>(coc-range-select) :call       CocActionAsync('rangeSelect',     visualmode(), v:true)
 map <C-O> :NERDTreeToggle
 vnoremap <C-N> :nohl
-nnoremap <C-N> :nohl
 onoremap <C-N> :nohl
-nmap <C-H> h
-xmap <C-H> h
 omap <C-H> h
 map <C-L> l
 map <C-K> k
 map <C-J> j
 vnoremap <C-Y> :update
-nnoremap <C-Y> :update
 onoremap <C-Y> :update
 inoremap  
 imap S <Plug>ISurround
@@ -166,7 +166,6 @@ set undofile
 set undolevels=700
 set updatetime=300
 set wildignore=*.pyc
-set window=44
 set nowritebackup
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
@@ -185,7 +184,7 @@ tabnew
 tabnew
 tabnew
 tabrewind
-edit main.py
+edit PlanetSystem.py
 set splitbelow splitright
 set nosplitbelow
 wincmd t
@@ -255,7 +254,7 @@ setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
 set foldlevel=99
-setlocal foldlevel=0
+setlocal foldlevel=99
 setlocal foldmarker={{{,}}}
 set foldmethod=indent
 setlocal foldmethod=indent
@@ -338,35 +337,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-171
-normal! zo
-175
-normal! zo
-177
-normal! zo
-178
-normal! zo
-187
-normal! zo
-189
-normal! zo
-189
-normal! zc
-198
-normal! zo
-187
-normal! zc
-203
-normal! zo
-205
-normal! zo
-171
-normal! zc
-let s:l = 31 - ((0 * winheight(0) + 21) / 42)
+let s:l = 1 - ((0 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
+1
 normal! 0
 tabnext
 edit SpaceObject.py
@@ -522,7 +497,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 21) / 42)
+let s:l = 1 - ((0 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -682,7 +657,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 21) / 42)
+let s:l = 1 - ((0 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -826,7 +801,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 21) / 42)
+let s:l = 1 - ((0 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -835,9 +810,10 @@ normal! 0
 tabnext 1
 set stal=1
 badd +0 main.py
-badd +0 SpaceObject.py
-badd +0 UIObject.py
-badd +0 README.md
+badd +1 SpaceObject.py
+badd +1 UIObject.py
+badd +1 README.md
+badd +0 PlanetSystem.py
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif

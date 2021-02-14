@@ -390,8 +390,9 @@ class TopMenu(UI):
         self.items = []                        # For TopMenu only 1 item = tab text
 
         self.rect = None                       # Tab rectangle (set in draw)
+        self.rectWidth = 75
         self.rectHeight = 25
-        self.borderRect = PG.Rect(0,0,300,200) # Set boundaries for tabs - if cursor leaves, tab closes
+        self.borderRect = PG.Rect(0,0,400,200) # Set boundaries for tabs - if cursor leaves, tab closes
 
         # list of MenuItem objects
         self.inItems = []                      # Need new variable for items under the tab
@@ -404,12 +405,15 @@ class TopMenu(UI):
 
         self.color = self.NORMAL_COLOR
 
-    def Draw(self, screen, num):
+    def Draw(self, screen, num, topbar):
         # num - number, needed for padding from other tabs
-        pos = (15+90*num, 0)
+        offset = 15
+        for i in range(num): offset += topbar[i].rectWidth + 15
+            
+        pos = (offset, 0)
 
         # Drawing own rect
-        self.rect = PG.Rect(15+90*num, 0, 75, self.rectHeight)
+        self.rect = PG.Rect(offset, 0, self.rectWidth, self.rectHeight)
         PG.draw.rect(screen, self.color, self.rect, border_bottom_right_radius=5, border_bottom_left_radius=5)
 
         # Tab text drawn in original UI draw

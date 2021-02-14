@@ -13,9 +13,11 @@ import SpaceObject as SO
 import UIObject as UI
 
 # Pygame init
-WIDTH = HEIGHT = 800 
-
 PG.init()
+
+WIDTH = HEIGHT = 800 
+sourceSize = (PG.display.Info().current_w, PG.display.Info().current_h)
+
 screen = PG.display.set_mode((WIDTH,HEIGHT))
 PG.display.set_caption("PlanetSystem")
 clock = PG.time.Clock()
@@ -37,7 +39,6 @@ REALTIME = 0
 TIMESTEP = 0
 
 PHSXTIME = 0.005
-# PHSXTIME = 0.01
 SIMSPEED = 1
 step_size = int(SIMSPEED / PHSXTIME)
 forwardSimSteps = 20000
@@ -50,6 +51,7 @@ camZOOM = 1
 staticObj = None
 objectList = []
 popup = UI.ObjPopup()
+objectTranslateSpeed = 5
 
 SCREENSHOT = False
 SSNum = -1
@@ -69,6 +71,7 @@ BGCOLOR = (10,10,10)
 
 def backgroundDrawing(): # Redraw background
     screen.fill(BGCOLOR)
+    pass
 
 def spaceObjectDrawing(): # Drawing space objects and its paths
     for obj in objectList: # Sim path draw
@@ -88,13 +91,23 @@ def loadDrawing(screen): # Drawing/Logic LOADMENU
     # Load own events
     events = PG.event.get()
 
-    # Main rect drawing and dimensions
-    mainRect = PG.Rect(WIDTH//8, HEIGHT//10, 6*WIDTH//8, 5*HEIGHT//6)
-    PG.draw.rect(screen, PG.Color(40,40,40), mainRect, border_radius=20)
+    ## Def settings
+    # zero = PG.Vector2(WIDTH//8, HEIGHT//10)
+    # width = PG.Vector2(6*WIDTH//8, 0) 
+    # height = PG.Vector2(0, 5*HEIGHT//6) 
 
-    zero = PG.Vector2(WIDTH//8, HEIGHT//10)
-    width = PG.Vector2(6*WIDTH//8, 0) 
-    height = PG.Vector2(0, 5*HEIGHT//6) 
+    # Main rect drawing and dimensions
+    if (WIDTH == 800):
+        zero = PG.Vector2(100, 80)
+        width = 600 
+        height = 670 
+    elif (WIDTH == 1000):
+        zero = PG.Vector2(200, 160)
+        width = 600 
+        height = 670 
+        
+    mainRect = PG.Rect(zero.x, zero.y, width, height)
+    PG.draw.rect(screen, PG.Color(40,40,40), mainRect, border_radius=20)
 
     # Test if cursor inside window (problem with first draw cycle -> fDraw check)
     if not (mainRect.collidepoint(PG.mouse.get_pos())) and (fDraw): DRAWSTATE = DState.SIM
@@ -102,7 +115,7 @@ def loadDrawing(screen): # Drawing/Logic LOADMENU
 
     # File loading
     text = HEADER.render("SAVE FILES", True, PG.Color("gray"))
-    screen.blit(text , PG.Vector2(width.x//2 - 100, 10) + zero)
+    screen.blit(text , PG.Vector2(width//2 - 100, 10) + zero)
 
     files = os.listdir("./.saves")
     saves = sorted([f for f in files if ".sim" in f])
@@ -111,8 +124,8 @@ def loadDrawing(screen): # Drawing/Logic LOADMENU
     # Arrow drawing + logic for mouse hover and clicks
     arrowUp   = HEADER.render("/\\", True, PG.Color("gray"))
     arrowDown = HEADER.render("\\/", True, PG.Color("gray"))
-    arrowUpPos = PG.Vector2(width.x//2 - 45, height.y-45) + zero
-    arrowDownPos = PG.Vector2(width.x//2 + 15, height.y-45) + zero
+    arrowUpPos = PG.Vector2(width//2 - 45, height-45) + zero
+    arrowDownPos = PG.Vector2(width//2 + 15, height-45) + zero
 
     UpRect = PG.Rect(arrowUpPos-PG.Vector2(10,5), (40, 40), border_radius=3)
     DownRect = PG.Rect(arrowDownPos-PG.Vector2(10,5), (40, 40), border_radius=3)
@@ -148,8 +161,8 @@ def loadDrawing(screen): # Drawing/Logic LOADMENU
         if (index == 4): break # show 4 max on a page
             
         # Rect pos, dimensions, mouse logic
-        pos = zero+PG.Vector2((width.x//2)*(index%2)+25, 75+280*(index//2))
-        rect = PG.Rect(pos.x, pos.y, width.x//2 - 50, 250)
+        pos = zero+PG.Vector2((width//2)*(index%2)+25, 75+280*(index//2))
+        rect = PG.Rect(pos.x, pos.y, width//2 - 50, 250)
 
         bg_color = PG.Color(30,30,30)
         if (rect.collidepoint(PG.mouse.get_pos())): bg_color = PG.Color(50,50,50)
@@ -203,12 +216,21 @@ def aboutDrawing(screen): # Drawing/Logic ABOUTMENU
     global DRAWSTATE, fDraw
 
     # Main rect drawing and dimensions
-    mainRect = PG.Rect(WIDTH//8, HEIGHT//10, 6*WIDTH//8, 5*HEIGHT//6)
+    if (WIDTH == 800):
+        zero = PG.Vector2(100, 80)
+        width = 600 
+        height = 675
+    elif (WIDTH == 1000):
+        zero = PG.Vector2(200, 160)
+        width = 600 
+        height = 675
+
+    mainRect = PG.Rect(zero.x, zero.y, width, height)
     PG.draw.rect(screen, PG.Color(40,40,40), mainRect, border_radius=20)
 
-    zero = PG.Vector2(WIDTH//8, HEIGHT//10)
-    width = PG.Vector2(6*WIDTH//8, 0) 
-    height = PG.Vector2(0, 4*HEIGHT//6) 
+    # zero = PG.Vector2(WIDTH//8, HEIGHT//10)
+    # width = PG.Vector2(6*WIDTH//8, 0) 
+    # height = PG.Vector2(0, 4*HEIGHT//6) 
 
     # Test if cursor inside window (problem with first draw cycle -> fDraw check)
     if not (mainRect.collidepoint(PG.mouse.get_pos())) and (fDraw): DRAWSTATE = DState.SIM
@@ -282,9 +304,14 @@ def sim(steps=1, reset=False): # Simulation
                 if (obj != other):
                     m = obj.mass*other.mass
                     r = ((obj.simSteps[-1].pos - other.simSteps[-1].pos)*camZOOM).magnitude()
-                    F = GRAV_CONS * (m)/(r**2)
 
-                    _dir = (obj.simSteps[-1].pos - other.simSteps[-1].pos).normalize()
+                    try: # Placing one object exactly at the same pos as others (crashed)
+                        F = GRAV_CONS * (m)/(r**2)
+                        _dir = (obj.simSteps[-1].pos - other.simSteps[-1].pos).normalize()
+                    except ZeroDivisionError: 
+                        F = 0
+                        _dir = PG.Vector2(0,0)
+
                     accel = _dir * (F/obj.mass)
                     nVel -= (accel * PHSXTIME)
 
@@ -397,7 +424,7 @@ def shortcutEvents(event, mods): # Key shortcuts
         PAUSED = True
         TIMESTEP = 0
         camXY = copy.copy(startCamPos)
-        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
         for obj in objectList: obj.ResetSteps()
     
@@ -405,7 +432,7 @@ def shortcutEvents(event, mods): # Key shortcuts
         SIMSPEED += 0.25
         if (SIMSPEED > 5): SIMSPEED = 5
 
-        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
         step_size = int(SIMSPEED / PHSXTIME)
 
@@ -481,7 +508,7 @@ def mouseClick(event): # Mouse click events - add, select/deselect, remove
                     break
 
 def TopBarHandling(out): # Top menu bar logic
-    global PAUSED, TIMESTEP, SELECTED, camXY, startCamPos, camZOOM, staticObj, objectList, SIMSPEED, step_size, topBar, DRAWSTATE, fDraw, loadSIndex
+    global PAUSED, TIMESTEP, SELECTED, camXY, startCamPos, camZOOM, staticObj, objectList, SIMSPEED, step_size, topBar, DRAWSTATE, fDraw, loadSIndex, screen, WIDTH, HEIGHT
     if (out == None): return
 
     # Logic after clicking some of the topbar buttons 
@@ -534,7 +561,7 @@ def TopBarHandling(out): # Top menu bar logic
         SIMSPEED += 0.25
         if (SIMSPEED > 5): SIMSPEED = 5
 
-        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
         step_size = int(SIMSPEED / PHSXTIME)
 
@@ -542,7 +569,7 @@ def TopBarHandling(out): # Top menu bar logic
         SIMSPEED -= 0.25
         if (SIMSPEED < 0.25): SIMSPEED = 0.25
 
-        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
         step_size = int(SIMSPEED / PHSXTIME)
 
@@ -553,10 +580,32 @@ def TopBarHandling(out): # Top menu bar logic
     elif (out == "sim_reset"):
         PAUSED = True
         TIMESTEP = 0
-        topBar[1].SELECTED = False
-        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].SELECTED = False
+        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
         for obj in objectList: obj.ResetSteps()
+
+    elif (out == "size800"):
+        WIDTH, HEIGHT = 800, 800
+        screen = PG.display.set_mode((WIDTH,HEIGHT))
+        topBar[1].inItems = [UI.MenuItem("Choose window size",                    width=210), 
+                            UI.MenuItem("800x800",    "size800",  "<--", (140,5), width=170), 
+                            UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170)]
+    elif (out == "size1000"):
+        WIDTH, HEIGHT = 1000, 1000
+        screen = PG.display.set_mode((WIDTH,HEIGHT))
+        topBar[1].inItems = [UI.MenuItem("Choose window size",                    width=210), 
+                            UI.MenuItem("800x800",    "size800",  "",    (140,5), width=170), 
+                            UI.MenuItem("1000x1000",  "size1000", "<--", (140,5), width=170)]
+
+    # PG PROBLEMS
+    # elif (out == "sizeFS"):
+    #     WIDTH, HEIGHT = sourceSize
+    #     screen = PG.display.set_mode((WIDTH,HEIGHT), flags^PG.FULLSCREEN)
+    #     topBar[1].inItems = [UI.MenuItem("Choose window size",                    width=210), 
+    #                         UI.MenuItem("800x800",    "size800",  "",    (140,5), width=170), 
+    #                         UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170), 
+    #                         UI.MenuItem("Fullscreen", "sizeFS",   "<--", (140,5), width=170)]
 
     elif (out == "about"):
         PAUSED = True
@@ -565,51 +614,70 @@ def TopBarHandling(out): # Top menu bar logic
         DRAWSTATE = DState.ABOUT
         fDraw = False
 
+def takeScreenshot():
+    global SCREENSHOT, SSNum
+    PG.image.save(screen, "./.saves/sImg_{}.png".format(SSNum))
+    SCREENSHOT = False
+    SSNum = -1
+
 def SetupTopBar(): # Setting up top menu bar (at the start)
     global topBar
 
-    topBar = [UI.TopMenu() for m in range(3)]
+    topBar = [UI.TopMenu() for m in range(4)]
     topBar[0].items = ["Files"]
+    topBar[0].rectWidth = 73
     # MenuItem class - (text, pointer, shortcut, shortcut offset, width)
     topBar[0].inItems = [UI.MenuItem("New...", 'newFile',  width=90), 
                          UI.MenuItem("Save",   'saveFile', width=90), 
                          UI.MenuItem("Load",   'loadFile', width=90)]
     topBar[0].borderRect = PG.Rect(0,0,120,130)
 
-    topBar[1].items = ["Sim"]
-    topBar[1].itemPos = PG.Vector2(21, 5)
-    topBar[1].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED),                    width=130),
-                         UI.MenuItem("Speed  +",   "sim_speedUP",   ">",     (130,5), width=150),
-                         UI.MenuItem("Speed  -",   "sim_speedDOWN", "<",     (130,5), width=150),
-                         UI.MenuItem("Reset",      "sim_reset",     "r",     (130,5), width=150),
-                         UI.MenuItem("Pause",      "sim_pause",     "space", (130,5), width=190)]
-    topBar[1].borderRect = PG.Rect(90,0,230,190)
+    # TO WORK LATER - PG BROKEN FULLSCREEN
+    # topBar[1].items = ["Window"]
+    # topBar[1].rectWidth = 100
+    # topBar[1].inItems = [UI.MenuItem("Choose window size",                     width=210), 
+    #                      UI.MenuItem("800x800",    "size800",  "<--", (140,5), width=170), 
+    #                      UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170), 
+    #                      UI.MenuItem("Fullscreen", "sizeFS",   "",    (140,5), width=170)]
+    # topBar[1].borderRect = PG.Rect(90,0,200,170)
 
-    topBar[2].items = ["About"]
-    topBar[2].itemPos = PG.Vector2(13, 5)
+    topBar[1].items = ["Window"]
+    topBar[1].rectWidth = 100
+    topBar[1].inItems = [UI.MenuItem("Choose window size",                     width=210), 
+                         UI.MenuItem("800x800",    "size800",  "<--", (140,5), width=170), 
+                         UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170)]
+    topBar[1].borderRect = PG.Rect(90,0,200,140)
+
+    topBar[2].items = ["Sim"]
+    topBar[2].rectWidth = 65
+    topBar[2].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED),                  width=130),
+                         UI.MenuItem("Speed  +", "sim_speedUP",   ">",     (130,5), width=150),
+                         UI.MenuItem("Speed  -", "sim_speedDOWN", "<",     (130,5), width=150),
+                         UI.MenuItem("Reset",    "sim_reset",     "r",     (130,5), width=150),
+                         UI.MenuItem("Pause",    "sim_pause",     "space", (130,5), width=190)]
+    topBar[2].borderRect = PG.Rect(200,0,230,190)
+
+    topBar[3].items = ["About"]
+    topBar[3].rectWidth = 85
 
 SetupTopBar()
 while True: # Main app loop - ends on Pygame quit event
-    backgroundDrawing()
-
+    backgroundDrawing() 
     # While editing always check for needed sim updates
     if (PAUSED and TIMESTEP == 0): CheckSimUpdate()
 
     spaceObjectDrawing()
 
     # In the need of img for save files (draw before topbar/popup)
-    if (SCREENSHOT):
-        PG.image.save(screen, "./.saves/sImg_{}.png".format(SSNum))
-        SCREENSHOT = False
-        SSNum = -1
+    if (SCREENSHOT): takeScreenshot()
 
     if (SELECTED and PAUSED): 
         popup.Draw(screen, SELECTED) # Drawing object popup menu 
-        if (TIMESTEP == 0): SELECTED.ChangeStartPos(ARROWKeysPressed, 2) # Moving objects (if not in sim) 
+        if (TIMESTEP == 0): SELECTED.ChangeStartPos(ARROWKeysPressed, objectTranslateSpeed) # Moving objects (if not in sim) 
 
     # Drawing top bar items
     for index, item in enumerate(topBar):
-        item.Draw(screen, index)
+        item.Draw(screen, index, topBar)
 
     # Events on different DRAWSTATES - SIM/LOAD-screen/ABOUT-screen
     if (DRAWSTATE == DState.SIM):
@@ -624,6 +692,9 @@ while True: # Main app loop - ends on Pygame quit event
                 out = popup.Event_handler(event, objectList)
                 arrowsOnText = True if out == "arrows" else False
             if (event.type == PG.KEYDOWN): shortcutEvents(event, out)
+            if (event.type == PG.KEYDOWN):
+                if (event.key == PG.K_t):
+                    quit()
             
             # Events on top bar
             for tb in topBar: TopBarHandling(tb.Event_hanlder(event, topBar)) 

@@ -1,0 +1,123 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage{titling}
+\usepackage{titlesec}
+\usepackage{amssymb}
+\usepackage{pifont}
+
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    % filecolor=magenta,
+    urlcolor=cyan,
+}
+\urlstyle{same}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+\renewcommand{\contentsname}{Obsah}
+\renewcommand{\thesection}{\Roman{section}}
+
+\titleformat{\section}
+{\Large\bfseries}
+{\Roman{section}.}
+{0.5em}
+{}
+
+
+\titleformat{\subsection}
+{\large\bfseries}
+{\thesubsection.}
+{0.5em}
+{}
+
+\title{
+        \vspace{1in}
+        \rule{\linewidth}{0.5pt}
+		\usefont{OT1}{bch}{b}{n}
+        \huge Uživatelská dokumentace \\PlanetSystem\\
+        \vspace{-10pt}
+        \rule{\linewidth}{1pt}
+}
+\author{
+		\normalfont\normalsize
+        Marek Bečvář\\[-3pt]\normalsize
+        12.2.2021
+}
+\date{}
+
+
+\begin{document}
+\maketitle 
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{O programu} 
+\paragraph{}
+PlanetSystem je programem pro Windows/Linux umožnující uživateli ve 2D vytvářet vlastní
+simulované planetární systémy. Simulace pracují se skutečnými fyzikálními
+závislostmi a vlastnostmi, které mohou být pro jednotlivá tělesa ve fázi
+\\editování upravována. To, jak jednotlivé změny ovlivňují celý systém, může pak
+uživatel sledovat v reálném čase v zobrazovacím okně.
+
+Oblíbené simulace je pak možné ukládat a zpětně načítat s pomocí vlastního
+speciálního menu. Program zároveň přichází s pár předem uloženými ukázkovými
+simulacemi, demonstrující možnosti, kterých je možné v simulacích dosáhnout. 
+
+\section{Instalace}
+\paragraph{Python}
+Projekt je vytvořen v programovacím jazyce Python verze 3.8.5. Pro maximální
+funkčnost je doporučeno využívat tuto verzi, i když \\kompatibilita je
+očekávána i s jinými verzemi Pythonu 3 (dokud je možná spolupráce s potřebnými
+knihovnami).\\\\ Instalace možná z oficiálních stránek Python.org
+\url{https://www.python.org/downloads/}.
+
+\paragraph{Potřebné knihovny} Pro správnou funkčnost programu je potřeba mít k
+základnímu Pythonu nainstalované ještě další knihovny. 
+
+
+\begin{table}[h!]
+\centering
+\hspace*{-1.5cm}
+\begin{tabular}{ |c|c|c| }
+ \hline
+ Jméno knihovny & Dokumentace & Standardní knihovna\\
+ \hline
+ \textbf{Enum} & \url{https://docs.python.org/3/library/enum.html} & \cmark\\
+ \hline
+ \textbf{Copy} & \url{https://docs.python.org/3/library/copy.html} & \cmark\\
+ \hline
+ \textbf{Os} & \url{https://docs.python.org/3/library/os.html} & \cmark\\
+ \hline
+ \textbf{Pickle} & \url{https://docs.python.org/3/library/pickle.html} & \cmark\\
+ \hline
+ \textbf{Random} & \url{https://docs.python.org/3/library/random.html} & \cmark\\
+ \hline
+ \textbf{Sys} & \url{https://docs.python.org/3/library/sys.html} & \cmark\\
+ \hline
+ \textbf{Numpy} & \url{https://numpy.org/doc/} & \xmark\\
+ \hline
+ \textbf{Pygame} & \url{https://www.pygame.org/docs/} & \xmark\\
+ \hline
+\end{tabular}
+
+\vspace{0.25cm}
+\footnotesize{Řada z těchto knihoven je považována za standardní (není
+potřeba instalovat), ale pro úplnost jsou v tabulce výše uvedeny všechny.}
+\end{table}
+
+\pagebreak
+Postup pro doinstalování potřebných knihoven je jednoduchý, přesněji popsaný v
+těchto zdrojích:\\
+\textbf{Numpy}: \url{https://numpy.org/install/}\\
+\textbf{Pygame}: \url{https://www.pygame.org/wiki/GettingStarted}\\
+
+Po nainstalování potřebných knihoven je již program plně funkční a spustitelný
+souborem \textbf{PlanetSystem.py}.
+
+
+\end{document}
