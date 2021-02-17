@@ -586,6 +586,7 @@ def TopBarHandling(out): # Top menu bar logic
     elif (out == "sim_reset"):
         PAUSED = True
         TIMESTEP = 0
+        camXY = copy.copy(startCamPos)
         topBar[2].SELECTED = False
         topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
