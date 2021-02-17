@@ -1,4 +1,4 @@
 {
-  "python.diagnostics.sourceMapsEnabled": true,
-  "python.linting.enabled": false
+  "python.linting.enabled": false,
+  "python.linting.flake8Enabled": true
 }

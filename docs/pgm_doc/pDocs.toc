@@ -11,7 +11,7 @@
 \contentsline {paragraph}{}{4}{paragraph*.6}%
 \contentsline {paragraph}{Resetování}{4}{paragraph*.7}%
 \contentsline {paragraph}{Set/Get}{4}{paragraph*.8}%
-\contentsline {paragraph}{Zoom funkce}{4}{paragraph*.9}%
+\contentsline {paragraph}{Zoom funkce}{5}{paragraph*.9}%
 \contentsline {paragraph}{Vykreslení trajektorie}{5}{paragraph*.10}%
 \contentsline {paragraph}{Contains/Collides}{5}{paragraph*.11}%
 \contentsline {subsubsection}{\numberline {$\bullet $\hspace {0em}}Třída simVars}{5}{subsubsection.3.1.2}%
@@ -49,3 +49,4 @@
 \contentsline {paragraph}{Hlavní cyklus aplikace}{10}{paragraph*.35}%
 \contentsline {section}{\numberline {IV}Ukládání souborů}{12}{section.4}%
 \contentsline {paragraph}{}{12}{paragraph*.36}%
+\contentsline {section}{\numberline {V}Možnosti dalšího rozvoje}{12}{section.5}%

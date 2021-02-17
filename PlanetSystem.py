@@ -7,15 +7,15 @@ import pickle
 import sys
 
 import numpy as np
-import pygame as PG
+import pygame as PG 
 
-import SpaceObject as SO
-import UIObject as UI
+from modules import SpaceObject as SO
+from modules import UIObject as UI
 
 # Pygame init
 PG.init()
 
-WIDTH = HEIGHT = 800 
+WIDTH = HEIGHT = 800
 sourceSize = (PG.display.Info().current_w, PG.display.Info().current_h)
 
 screen = PG.display.set_mode((WIDTH,HEIGHT))
@@ -34,20 +34,24 @@ class DState(Enum):
 
 DRAWSTATE = DState.SIM
 
+#PHYSICS
+STEPTIME = 0.005
+SIMSPEED = 1
+step_size = int(SIMSPEED / STEPTIME)
+forwardSimSteps = 20000
+GRAV_CONS = 6.67430*10**(1)
+
 #VARIABLES
 REALTIME = 0
 TIMESTEP = 0
+FPS = 30 
 
-PHSXTIME = 0.005
-SIMSPEED = 1
-step_size = int(SIMSPEED / PHSXTIME)
-forwardSimSteps = 20000
-
-SELECTED = None
 startCamPos = PG.Vector2(0,0)
 camXY = copy.copy(startCamPos)
 camZOOM = 1
+camMoveSpeed = 15
 
+SELECTED = None
 staticObj = None
 objectList = []
 popup = UI.ObjPopup()
@@ -62,12 +66,8 @@ topBarSelected = False
 HEADER = PG.font.SysFont('Arial', 35, False, False)
 FONT = PG.font.SysFont('Arial', 20, False, False)
 SMALL = PG.font.SysFont('Arial', 14, False, False)
-
-#CONSTANTS
-FPS = 30 
-GRAV_CONS = 6.67430*10**(1)
-camMoveSpeed = 15
 BGCOLOR = (10,10,10)
+
 
 def backgroundDrawing(): # Redraw background
     screen.fill(BGCOLOR)
@@ -258,6 +258,8 @@ def aboutDrawing(screen): # Drawing/Logic ABOUTMENU
                 "", 
                 "  Space - Start simulation", 
                 "  R - Reset simulation to start", 
+                "", 
+                "  Escape - Quit application"
                 ]
 
     lower = ["The app was developed as a final project for subject Programming 1 - MFF UK",
@@ -290,7 +292,7 @@ def sim(steps=1, reset=False): # Simulation
             # New object position taken from last step position and velocity,
             # we are calculating velocity for the next step
 
-            nPos = PG.Vector2(obj.simSteps[-1].pos) + (obj.simSteps[-1].vel * PHSXTIME)/camZOOM
+            nPos = PG.Vector2(obj.simSteps[-1].pos) + (obj.simSteps[-1].vel * STEPTIME)/camZOOM
 
             # New velocity vector - takes the current object velocity
             nVel = PG.Vector2()
@@ -314,7 +316,7 @@ def sim(steps=1, reset=False): # Simulation
                         _dir = PG.Vector2(0,0)
 
                     accel = _dir * (F/obj.mass)
-                    nVel -= (accel * PHSXTIME)
+                    nVel -= (accel * STEPTIME)
 
             obj.simSteps.append(SO.simVars(nPos,nVel))
 
@@ -411,6 +413,7 @@ def shortcutEvents(event, mods): # Key shortcuts
 
     elif (event.key == PG.K_SPACE): # PLAY/PAUSE
         PAUSED = not PAUSED
+        if (TIMESTEP == 0 and not PAUSED): CheckSimUpdate()
         SELECTED = None
 
     elif (event.key == PG.K_DELETE and mods != "delete"): # REMOVE SELECTED
@@ -437,7 +440,7 @@ def shortcutEvents(event, mods): # Key shortcuts
 
         topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
-        step_size = int(SIMSPEED / PHSXTIME)
+        step_size = int(SIMSPEED / STEPTIME)
 
 
     elif (event.key == PG.K_LESS) or (event.key == PG.K_COMMA and PG.key.get_mods() & PG.KMOD_SHIFT): # SIM SPEED DOWN
@@ -446,7 +449,7 @@ def shortcutEvents(event, mods): # Key shortcuts
 
         topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
-        step_size = int(SIMSPEED / PHSXTIME)
+        step_size = int(SIMSPEED / STEPTIME)
 
 def mouseWheel(event): # Mousewheel events for zooming
     if (event.type == PG.MOUSEBUTTONDOWN):
@@ -486,7 +489,7 @@ def mouseClick(event): # Mouse click events - add, select/deselect, remove
             c = screen.get_at(PG.mouse.get_pos()) 
             if not (SELECTED) and (c == BGCOLOR):
                 # pos - camXY = shown mouse position without translation
-                objectList.append(SO.Object(pos - camXY, [0,0], 1000, objectList, camZOOM))
+                objectList.append(SO.Object(pos - camXY, [0,0], 1000))
 
                 TIMESTEP = 0
                 PAUSED = True
@@ -566,7 +569,7 @@ def TopBarHandling(out): # Top menu bar logic
 
         topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
-        step_size = int(SIMSPEED / PHSXTIME)
+        step_size = int(SIMSPEED / STEPTIME)
 
     elif (out == "sim_speedDOWN"):
         SIMSPEED -= 0.25
@@ -574,7 +577,7 @@ def TopBarHandling(out): # Top menu bar logic
 
         topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
 
-        step_size = int(SIMSPEED / PHSXTIME)
+        step_size = int(SIMSPEED / STEPTIME)
 
     elif (out == "sim_pause"):
         PAUSED = not PAUSED
@@ -666,6 +669,7 @@ def SetupTopBar(): # Setting up top menu bar (at the start)
 SetupTopBar()
 while True: # Main app loop - ends on Pygame quit event
     backgroundDrawing() 
+
     # While editing always check for needed sim updates
     if (PAUSED and TIMESTEP == 0): CheckSimUpdate()
 
@@ -674,13 +678,13 @@ while True: # Main app loop - ends on Pygame quit event
     # In the need of img for save files (draw before topbar/popup)
     if (SCREENSHOT): takeScreenshot()
 
-    if (SELECTED and PAUSED): 
-        popup.Draw(screen, SELECTED) # Drawing object popup menu 
-        if (TIMESTEP == 0): SELECTED.ChangeStartPos(ARROWKeysPressed, objectTranslateSpeed) # Moving objects (if not in sim) 
-
     # Drawing top bar items
     for index, item in enumerate(topBar):
         item.Draw(screen, index, topBar)
+
+    if (SELECTED and PAUSED): 
+        popup.Draw(screen, SELECTED) # Drawing object popup menu 
+        if (TIMESTEP == 0): SELECTED.ChangeStartPos(ARROWKeysPressed, objectTranslateSpeed) # Moving objects (if not in sim) 
 
     # Events on different DRAWSTATES - SIM/LOAD-screen/ABOUT-screen
     if (DRAWSTATE == DState.SIM):
@@ -697,7 +701,7 @@ while True: # Main app loop - ends on Pygame quit event
             if (event.type == PG.KEYDOWN): shortcutEvents(event, out)
             
             # Events on top bar
-            for tb in topBar: TopBarHandling(tb.Event_hanlder(event, topBar)) 
+            for tb in topBar: TopBarHandling(tb.Event_handler(event, topBar)) 
 
             mouseClick(event)
             mouseWheel(event)
@@ -718,6 +722,9 @@ while True: # Main app loop - ends on Pygame quit event
         aboutDrawing(screen)
         for event in PG.event.get():
             if (event.type == PG.QUIT): sys.exit()
-        
+            if (event.type == PG.KEYDOWN):
+                if (event.key == PG.K_ESCAPE): sys.exit()
+                
+
     PG.display.flip()
     clock.tick(60)

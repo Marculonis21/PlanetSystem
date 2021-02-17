@@ -17,6 +17,5 @@
 \contentsline {paragraph}{Sim}{6}{paragraph*.11}%
 \contentsline {paragraph}{About}{6}{paragraph*.12}%
 \contentsline {subsection}{\numberline {iv}Shrnutí ovládacích prvků}{7}{subsection.3.4}%
-\contentsline {section}{\numberline {IV}Budoucnost programu}{7}{section.4}%
-\contentsline {section}{\numberline {V}Ukázka}{8}{section.5}%
+\contentsline {section}{\numberline {IV}Ukázka}{8}{section.4}%
 \contentsline {paragraph}{}{8}{paragraph*.13}%

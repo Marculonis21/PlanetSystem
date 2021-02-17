@@ -1,4 +1,5 @@
 \documentclass[a4paper, 12pt]{article}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{booktabs}
 \usepackage{titling}
@@ -65,13 +66,13 @@
 
 \section{O programu} 
 \paragraph{}
-PlanetSystem je programem pro Windows/Linux umožňující uživateli ve 2D vytvářet vlastní
-simulované planetární systémy. Simulace pracují se skutečnými fyzikálními
-závislostmi a vlastnostmi, které mohou být pro \\jednotlivá tělesa ve fázi
+PlanetSystem je programem pro Windows/Linux umožňující uživateli ve 2D vytvářet
+vlastní simulované planetární systémy. Simulace pracují se skutečnými
+fyzikálními vlastnostmi, které mohou být pro jednotlivá tělesa ve fázi
 editování upravována. To, jak jednotlivé změny ovlivňují celý systém, může pak
 uživatel sledovat v reálném čase v zobrazovacím okně.
 
-Oblíbené simulace je pak možné ukládat a zpětně načítat s pomocí vlastního
+Oblíbené simulace je pak možné ukládat a zpětně načítat s pomocí \\vlastního
 speciálního menu. Program zároveň přichází s pár předem uloženými ukázkovými
 simulacemi, demonstrující možnosti, kterých je možné v simulacích dosáhnout. 
 
@@ -84,7 +85,7 @@ knihovnami).\\\\ Instalace možná z oficiálních stránek Python.org
 \url{https://www.python.org/downloads/}.
 
 \paragraph{Potřebné knihovny} Pro správnou funkčnost programu je potřeba mít k
-základnímu Pythonu nainstalované ještě další knihovny. 
+základnímu Pythonu nainstalované ještě další (nestandardní) knihovny. 
 
 
 \begin{table}[h!]
@@ -118,18 +119,18 @@ potřeba instalovat), ale pro úplnost jsou v tabulce výše uvedeny všechny.}
 \end{table}
 
 \pagebreak
-Postup pro doinstalování potřebných knihoven je jednoduchý, přesněji popsaný v
+Postup pro doinstalování potřebných knihoven je jednoduchý, přesně \\popsaný v
 těchto zdrojích:\\
 \textbf{Numpy}: \url{https://numpy.org/install/}\\
 \textbf{Pygame}: \url{https://www.pygame.org/wiki/GettingStarted}\\
 
 Po nainstalování potřebných knihoven je již program plně funkční a spustitelný
-souborem \textbf{PlanetSystem.py}.
+přes soubor \textbf{PlanetSystem.py}.
 
 \section{Ovládání}
 \paragraph{Spuštění}
-Pro spuštění programu je potřeba spustit hlavní soubor \\\pgm. Po tomto se
-spustí hlavní okno aplikace, ve kterém poběží všechny simulace.
+Pro spuštění programu je potřeba spustit hlavní soubor \\\textbf{\pgm}. Po tomto se
+otevře hlavní okno aplikace, ve kterém poběží všechny simulace.
 
 \vspace{0.5cm}
 \begin{center}
@@ -159,36 +160,36 @@ S využitím šipek na klávesnici je možné zvolený objekt posouvat v
 \\prostoru. Objekt pak můžeme odebrat kliknutím na něj pravým tlačítkem myši
 nebo vybráním objektu a stisknutím tlačítka delete.\\
 \linebreak
-Přidáváním planet a editování jejich startovních vlastností se okamžitě
-propočítává a program dopředu předpovídá trasu, kterou by podle fyzikálních
-pravidel těleso proletělo.
+Přidáváním planet a editování jejich startovních vlastností se simulace
+okamžitě propočítává a program dopředu předpoví trasu, kterou by podle
+fyzikálních pravidel těleso proletělo.
 
 \paragraph{Central object}
 Zapnutí vlastnosti \emph{Central object} na vybraném tělese \\znamená změnu
-výpočtu pohybu v celé simulaci. Jedná se o užitečnou funkci jak pro vytváření
-různých zajímavých jevů (speciálních orbit), tak pro \\vizualizaci pohybu
-ostatních těles relativně vůči zvolenému objektu.
+výpočtů pro pohyb v celé simulaci. Jedná se o užitečnou funkci jak pro
+vytváření různých zajímavých jevů (speciálních orbit), tak pro \\vizualizaci
+pohybu ostatních těles relativně vůči zvolenému objektu.
 
 \newpage
 \subsection{Ovládání simulace/kamery}
 \paragraph{}
 Při editování je simulace automaticky pozastavena. Spouštění a zastavonání může
 být řízeno klávesou mezerník (space). V průběhu je také možno měnit rychlost
-času v rozsahu hodnot rychlostí $0.25-5.0$ pomocí kláves $<$ zpomalení, $>$
+času v rozsahu hodnot rychlostí $0.25-5.0$ pomocí kláves "$<$" zpomalení, "$>$"
 zrychlení.
 
 Pohyb hlavní kamery se ovládá pomocí směrových kláves WSAD. \\Pro přibližování a
 oddalování kamery se využívá kolečko myši (scroll).
 
-Z různých důvodů může být potřeba simulaci resetovat do původního stavu. To
+Z různých důvodů může být potřeba běžící simulaci resetovat do původního stavu. To
 může být docíleno kliknutím do volého prostoru obrazovky (přidání tělesa
 resetuje průběh simulace), nebo zastavením simulace a stisknutí\\ klávesy R
 (návrat těles a kamery do původní polohy).
 
 \subsection{Panel nástrojů}
 \paragraph{}
-Všechny hlavní užitečné klávesové zkratky a příkazy jsou dále popsány v hlavním
-panelu na horním okraji obrazovky.
+Všechny hlavní klávesové zkratky a příkazy jsou dále popsány v hlavním panelu
+na horním okraji obrazovky.
 
 \begin{center}
 \includegraphics[width=0.8\linewidth]{pics/p3_crop.png}
@@ -204,8 +205,8 @@ pro změnu velikosti obrazu uživatel v této chvíli nemá.
 
 \paragraph{Sim}
 Tlačíko \emph{Sim} je dalším způsobem jak zasahovat do průběhu simulace (měnit
-rychlost, zastavit/spustit, resetovat). Také pod ním jde vždy najít přesná
-aktuální rychlost simulace.
+rychlost, zastavit/spustit, resetovat). V této záložce také jde vždy najít
+přesná aktuální rychlost simulace.
 
 \paragraph{About}
 V sekci \emph{About} je ještě jednou krátký popis programu, informace o
@@ -247,17 +248,10 @@ projektu a autorovi a stručný seznam ovládacích prvků a užitečných zkrat
 \end{table}
 \vspace{1cm}
 
-\section{Budoucnost programu}
-Ačkoli se již jedná o plnou, funkční verzi programu, jsou jistě věci, které
-bych osobně rád dodělávál a vylepšoval i nadále. Vedle celkové optimalizace
-(rychlejší funkčnost pro uživatele, jiný platforma než Python) by se řadila
-ještě třeba lokalizace jazyků, úprava celkového UI designu a zajištění co možná
-nejšiřší kompatibility bez ztráty funkčnosti. 
-
 \newpage
 \section{Ukázka}
 \paragraph{}
-Pro ukázku jsem vybral planetární systém s více objekty na různých orbitách a
+Pro ukázku jsem vybral planetární systém s více objekty na různých \\orbitách a
 jedním středovým (nejtěžším objektem), viz obrázek.
 
 \begin{center}
@@ -281,22 +275,22 @@ samou simulaci jako v prvním obrázku, teď je ale za centrální objekt považ
 \\objekt červené barvy (pohyb všech objektů je počítán relativně vůči centrálnímu
 objektu - pozice červeného se s časem nemění).
 
-Na této vizualizaci můžeme pozorovat například jeden z důvodů proč Mikuláš
-Koperník přišel s teorií heliocentrické soustavy. \\Pozoroval, že planety kolem
-nás neobíhají po kružnicích (eliptických drahách), ale že dokonce někdy mohou
-tělesa na obloze provádět i jakýsi \emph{zpětný chod}. Jediným řešením tohoto
-jevu pak byla teorie heliocentrické soustavy.  \\V našem případě se můžeme
-podívat na zvolenou červenou planetu, která se ještě pořád považuje za střed
-vesmíru. Zde pak jde pozorovat, že modrá planeta, skutečně obíhající po
-orbitě kolem nejhmotnějšího růžového objektu (\emph{Slunce}), opravdu z našeho
-pohledu tvoří tyto pozorovatelné smyčky.
+Na této vizualizaci můžeme pozorovat například jeden z důvodů proč kdysi
+Mikuláš Koperník přišel s teorií heliocentrické soustavy. \\Pozoroval, že
+planety kolem nás neobíhají po kružnicích (eliptických drahách), ale že dokonce
+někdy mohou tělesa na obloze provádět i jakýsi \emph{zpětný chod}. Jediným
+řešením tohoto jevu pak byla teorie heliocentrické soustavy.  \\V našem případě
+se můžeme podívat na zvolenou červenou planetu, která se ještě pořád považuje
+za střed vesmíru. Zde pak jde pozorovat, že modrá planeta, skutečně obíhající
+po orbitě kolem nejhmotnějšího růžového objektu (\emph{Slunce}), opravdu z
+našeho pohledu tvoří tyto pozorovatelné smyčky.
 \\\\
-\footnotesize Tento projekt je vždy dostupný v \emph{load} menu jako ukázkový.\\
+\footnotesize Tento ukázkový projekt je vždy dostupný v \emph{Load} menu.\\
 \rule{\linewidth}{1pt}
 \newpage
 
 \normalsize
-Za psychickou podporu v semestru, teplé jídlo, ubytování a pěkné \\pracovní
-prostředí, děkuji osazenstvu našeho domova.
+Za psychickou podporu v průběhu semestru, teplé jídlo, ubytování a pěkné pracovní
+prostředí, děkuji své rodině.
 
 \end{document}
