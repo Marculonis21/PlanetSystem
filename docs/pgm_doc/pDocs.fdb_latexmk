@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1613565248 "pDocs.tex" "pDocs.pdf" "pDocs" 1613565248
+["pdflatex"] 1614001496 "pDocs.tex" "pDocs.pdf" "pDocs" 1614001565
   "/etc/texmf/web2c/texmf.cnf" 1613049494 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/marculonis/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk" 1613158288 31928 ca05e7594d89d75012b12472a6466409 ""
   "/home/marculonis/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk" 1613158289 40112 4c3c7e52140fd46ea0dd42c2bf9d02dc ""
@@ -99,15 +99,15 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1581979058 38841 ce3692aa899bb693b90b87eaa5d4d84e ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1613049500 128028 f533b797fba58d231669ea19e894e23e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1613049505 4791332 e4ec492d7606bb9062c2e2cd9fe47cae ""
-  "pDocs.aux" 1613565248 6272 4c6aa61c792b25ac43cee859cfde075e "pdflatex"
-  "pDocs.out" 1613565248 1062 b756f58d96671c6269b4bc98d5ad267c "pdflatex"
-  "pDocs.tex" 1613565247 21191 8fb11aab7ea8074d4cc7def77d11c501 ""
-  "pDocs.toc" 1613565248 3466 af69640cd16bb4e98f7b70e6d49fe7e3 "pdflatex"
+  "pDocs.aux" 1614001496 6272 4c6aa61c792b25ac43cee859cfde075e "pdflatex"
+  "pDocs.out" 1614001496 1062 b756f58d96671c6269b4bc98d5ad267c "pdflatex"
+  "pDocs.tex" 1614001485 21113 168c48ee59c3648de537bf810347af95 ""
+  "pDocs.toc" 1614001496 3466 af69640cd16bb4e98f7b70e6d49fe7e3 "pdflatex"
   "pics/p2_crop.png" 1613303259 28284 0dc22b63ef440d5abddd7ec9829d9a25 ""
   "pics/p3_crop.png" 1613307860 14103 9da95306de0bc097909461121a97559f ""
   (generated)
+  "pDocs.aux"
   "pDocs.out"
+  "pDocs.log"
   "pDocs.toc"
   "pDocs.pdf"
-  "pDocs.aux"
-  "pDocs.log"

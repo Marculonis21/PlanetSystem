@@ -280,7 +280,7 @@ def step(): # SimStep update
 
     TIMESTEP += step_size
 
-def sim(steps=1, reset=False): # Simulation
+def sim(steps, reset=False): # Simulation
     if (reset or TIMESTEP == 0): # When editing -> resets constantly for updates
         for obj in objectList: obj.ResetSteps()
 
@@ -430,7 +430,10 @@ def shortcutEvents(event, mods): # Key shortcuts
         PAUSED = True
         TIMESTEP = 0
         camXY = copy.copy(startCamPos)
-        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+
+        # Change only text not whole object
+        # topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), 130)
+        topBar[2].inItems[0].items[0] = "Speed: {}".format(SIMSPEED)
 
         for obj in objectList: obj.ResetSteps()
     
@@ -438,16 +441,15 @@ def shortcutEvents(event, mods): # Key shortcuts
         SIMSPEED += 0.25
         if (SIMSPEED > 5): SIMSPEED = 5
 
-        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0].items[0] = "Speed: {}".format(SIMSPEED)
 
         step_size = int(SIMSPEED / STEPTIME)
-
 
     elif (event.key == PG.K_LESS) or (event.key == PG.K_COMMA and PG.key.get_mods() & PG.KMOD_SHIFT): # SIM SPEED DOWN
         SIMSPEED -= 0.25
         if (SIMSPEED < 0.25): SIMSPEED = 0.25
 
-        topBar[1].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0].items[0] = "Speed: {}".format(SIMSPEED)
 
         step_size = int(SIMSPEED / STEPTIME)
 
@@ -513,12 +515,18 @@ def mouseClick(event): # Mouse click events - add, select/deselect, remove
                     if (len(objectList) > 0): objectList[0].simUpdate = True
                     break
 
+def takeScreenshot():
+    global SCREENSHOT, SSNum
+    PG.image.save(screen, "./.saves/sImg_{}.png".format(SSNum))
+    SCREENSHOT = False
+    SSNum = -1
+
 def TopBarHandling(out): # Top menu bar logic
     global PAUSED, TIMESTEP, SELECTED, camXY, startCamPos, camZOOM, staticObj, objectList, SIMSPEED, step_size, topBar, DRAWSTATE, fDraw, loadSIndex, screen, WIDTH, HEIGHT
     if (out == None): return
 
     # Logic after clicking some of the topbar buttons 
-    if (out == "newFile"):
+    if (out == topBarFunc.newFile):
         PAUSED = True
         TIMESTEP = 0
         SIMSPEED = 1
@@ -530,7 +538,7 @@ def TopBarHandling(out): # Top menu bar logic
         objectList = []
         topBar[0].SELECTED = False
 
-    elif (out == "saveFile"):       
+    elif (out == topBarFunc.saveFile):       
         global SCREENSHOT, SSNum
         try: os.mkdir("./.saves")
         except FileExistsError: pass
@@ -550,7 +558,7 @@ def TopBarHandling(out): # Top menu bar logic
         SSNum = index
         topBar[0].SELECTED = False
 
-    elif (out == "loadFile"):
+    elif (out == topBarFunc.loadFile):
         try: os.mkdir("./.saves")
         except FileExistsError: pass
 
@@ -563,56 +571,48 @@ def TopBarHandling(out): # Top menu bar logic
         fDraw = False
         loadSIndex = 0
 
-    elif (out == "sim_speedUP"):
+    elif (out == topBarFunc.sim_speedUP):
         SIMSPEED += 0.25
         if (SIMSPEED > 5): SIMSPEED = 5
 
-        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0].items[0] = "Speed: {}".format(SIMSPEED)
 
         step_size = int(SIMSPEED / STEPTIME)
 
-    elif (out == "sim_speedDOWN"):
+    elif (out == topBarFunc.sim_speedDOWN):
         SIMSPEED -= 0.25
         if (SIMSPEED < 0.25): SIMSPEED = 0.25
 
-        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0].items[0] = "Speed: {}".format(SIMSPEED)
 
         step_size = int(SIMSPEED / STEPTIME)
 
-    elif (out == "sim_pause"):
+    elif (out == topBarFunc.sim_pause):
         PAUSED = not PAUSED
         topBar[1].SELECTED = False
 
-    elif (out == "sim_reset"):
+    elif (out == topBarFunc.sim_reset):
         PAUSED = True
         TIMESTEP = 0
         camXY = copy.copy(startCamPos)
         topBar[2].SELECTED = False
-        topBar[2].inItems[0] = UI.MenuItem("Speed: {}".format(SIMSPEED), None, width=130)
+        topBar[2].inItems[0].items[0] = "Speed: {}".format(SIMSPEED)
 
         for obj in objectList: obj.ResetSteps()
 
-    elif (out == "size800"):
+    elif (out == topBarFunc.size800):
         WIDTH, HEIGHT = 800, 800
         screen = PG.display.set_mode((WIDTH,HEIGHT))
-        topBar[1].inItems = [UI.MenuItem("Choose window size",                    width=210), 
-                            UI.MenuItem("800x800",    "size800",  "<--", (140,5), width=170), 
-                            UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170)]
-    elif (out == "size1000"):
+
+        topBar[1].inItems[1].shortcut = "<--"
+        topBar[1].inItems[2].shortcut = ""
+
+    elif (out == topBarFunc.size1000):
         WIDTH, HEIGHT = 1000, 1000
         screen = PG.display.set_mode((WIDTH,HEIGHT))
-        topBar[1].inItems = [UI.MenuItem("Choose window size",                    width=210), 
-                            UI.MenuItem("800x800",    "size800",  "",    (140,5), width=170), 
-                            UI.MenuItem("1000x1000",  "size1000", "<--", (140,5), width=170)]
 
-    # PG PROBLEMS
-    # elif (out == "sizeFS"):
-    #     WIDTH, HEIGHT = sourceSize
-    #     screen = PG.display.set_mode((WIDTH,HEIGHT), flags^PG.FULLSCREEN)
-    #     topBar[1].inItems = [UI.MenuItem("Choose window size",                    width=210), 
-    #                         UI.MenuItem("800x800",    "size800",  "",    (140,5), width=170), 
-    #                         UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170), 
-    #                         UI.MenuItem("Fullscreen", "sizeFS",   "<--", (140,5), width=170)]
+        topBar[1].inItems[1].shortcut = ""
+        topBar[1].inItems[2].shortcut = "<--"
 
     elif (out == "about"):
         PAUSED = True
@@ -621,51 +621,44 @@ def TopBarHandling(out): # Top menu bar logic
         DRAWSTATE = DState.ABOUT
         fDraw = False
 
-def takeScreenshot():
-    global SCREENSHOT, SSNum
-    PG.image.save(screen, "./.saves/sImg_{}.png".format(SSNum))
-    SCREENSHOT = False
-    SSNum = -1
-
+topBarFunc = None
 def SetupTopBar(): # Setting up top menu bar (at the start)
-    global topBar
+    global topBar, topBarFunc
+
+    # Different style of enum declaration
+    topBarFunc = Enum("topBarFunc", "newFile saveFile loadFile size800 size1000 sim_speedUP sim_speedDOWN sim_reset sim_pause")
 
     topBar = [UI.TopMenu() for m in range(4)]
     topBar[0].items = ["Files"]
     topBar[0].rectWidth = 73
     # MenuItem class - (text, pointer, shortcut, shortcut offset, width)
-    topBar[0].inItems = [UI.MenuItem("New...", 'newFile',  width=90), 
-                         UI.MenuItem("Save",   'saveFile', width=90), 
-                         UI.MenuItem("Load",   'loadFile', width=90)]
+    topBar[0].inItems = [UI.MenuItem("New...", 90, topBarFunc.newFile), 
+                         UI.MenuItem("Save",   90, topBarFunc.saveFile), 
+                         UI.MenuItem("Load",   90, topBarFunc.loadFile)]
     topBar[0].borderRect = PG.Rect(0,0,120,130)
-
-    # TO WORK LATER - PG BROKEN FULLSCREEN
-    # topBar[1].items = ["Window"]
-    # topBar[1].rectWidth = 100
-    # topBar[1].inItems = [UI.MenuItem("Choose window size",                     width=210), 
-    #                      UI.MenuItem("800x800",    "size800",  "<--", (140,5), width=170), 
-    #                      UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170), 
-    #                      UI.MenuItem("Fullscreen", "sizeFS",   "",    (140,5), width=170)]
-    # topBar[1].borderRect = PG.Rect(90,0,200,170)
 
     topBar[1].items = ["Window"]
     topBar[1].rectWidth = 100
-    topBar[1].inItems = [UI.MenuItem("Choose window size",                     width=210), 
-                         UI.MenuItem("800x800",    "size800",  "<--", (140,5), width=170), 
-                         UI.MenuItem("1000x1000",  "size1000", "",    (140,5), width=170)]
+    topBar[1].inItems = [UI.MenuItem("Choose window size", 210), 
+                         UI.MenuItem("800x800",            170, topBarFunc.size800,  "<--", (140,5)), 
+                         UI.MenuItem("1000x1000",          170, topBarFunc.size1000, "",    (140,5))]
     topBar[1].borderRect = PG.Rect(90,0,200,140)
 
     topBar[2].items = ["Sim"]
     topBar[2].rectWidth = 65
-    topBar[2].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED),                  width=130),
-                         UI.MenuItem("Speed  +", "sim_speedUP",   ">",     (130,5), width=150),
-                         UI.MenuItem("Speed  -", "sim_speedDOWN", "<",     (130,5), width=150),
-                         UI.MenuItem("Reset",    "sim_reset",     "r",     (130,5), width=150),
-                         UI.MenuItem("Pause",    "sim_pause",     "space", (130,5), width=190)]
+    topBar[2].inItems = [UI.MenuItem("Speed: {}".format(SIMSPEED), 130),
+                         UI.MenuItem("Speed  +",                   150, topBarFunc.sim_speedUP,   ">",     (130,5)),
+                         UI.MenuItem("Speed  -",                   150, topBarFunc.sim_speedDOWN, "<",     (130,5)),
+                         UI.MenuItem("Reset",                      150, topBarFunc.sim_reset,     "r",     (130,5)),
+                         UI.MenuItem("Pause",                      190, topBarFunc.sim_pause,     "space", (130,5))]
     topBar[2].borderRect = PG.Rect(200,0,230,190)
 
     topBar[3].items = ["About"]
     topBar[3].rectWidth = 85
+    
+    # First draw to set up rects - FIX
+    for index, item in enumerate(topBar):
+        item.Setup(index, topBar)
 
 SetupTopBar()
 while True: # Main app loop - ends on Pygame quit event
@@ -681,7 +674,7 @@ while True: # Main app loop - ends on Pygame quit event
 
     # Drawing top bar items
     for index, item in enumerate(topBar):
-        item.Draw(screen, index, topBar)
+        item.Draw(screen)
 
     if (SELECTED and PAUSED): 
         popup.Draw(screen, SELECTED) # Drawing object popup menu 

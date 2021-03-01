@@ -66,12 +66,12 @@ class ObjPopup(UI):
         y = pos.y
  
         # InputField class - (xPos, yPos, width, height, default, xPadding, pointer, minValue (-1=None), maxValue (-1=None), decimal places)
-        self.inputs = [InputField(x+120, y+25,80,22,             str(obj.mass),5,"mass", 1, -1,0),
-                       InputField(x+120, y+75,80,22,str(obj.simSteps[0].vel.x),5,"xvel",-1, -1,2),
-                       InputField(x+120,y+100,80,22,str(obj.simSteps[0].vel.y),5,"yvel",-1, -1,2),
-                       InputField(x,    y+175,45,22,         str(obj.color[0]),5,   "r", 0,255,0),
-                       InputField(x+50, y+175,45,22,         str(obj.color[1]),5,   "g", 0,255,0),
-                       InputField(x+100,y+175,45,22,         str(obj.color[2]),5,   "b", 0,255,0)]
+        self.inputs = [InputField(x+120, y+25,80,22,             str(obj.mass),5,obj.pointers.mass,  1, -1,0),
+                       InputField(x+120, y+75,80,22,str(obj.simSteps[0].vel.x),5,obj.pointers.xvel, -1, -1,2),
+                       InputField(x+120,y+100,80,22,str(obj.simSteps[0].vel.y),5,obj.pointers.yvel, -1, -1,2),
+                       InputField(x,    y+175,45,22,         str(obj.color[0]),5,obj.pointers.r,     0,255,0),
+                       InputField(x+50, y+175,45,22,         str(obj.color[1]),5,obj.pointers.g,     0,255,0),
+                       InputField(x+100,y+175,45,22,         str(obj.color[2]),5,obj.pointers.b,     0,255,0)]
 
         # RadioButton class - (xPos, yPos, size, default)
         self.radioButtons = [RadioButton(x+178,y+125,22,self.obj.static)]
@@ -138,11 +138,11 @@ class ObjPopup(UI):
 
                 # Get/Update drag value - x distance from start drag pos
                 elif (inp.drag):
-                    if (inp.pointer == "mass"):
+                    if (inp.pointer == self.obj.pointers.mass):
                         value = inp.GetDragValue(mousePos, 1/10)
-                    elif (inp.pointer == "r" or inp.pointer == "g" or inp.pointer == "b"):
+                    elif (inp.pointer == self.obj.pointers.r or inp.pointer == self.obj.pointers.g or inp.pointer == self.obj.pointers.b):
                         value = inp.GetDragValue(mousePos, 5)
-                    elif (inp.pointer == "xvel" or inp.pointer == "yvel"):
+                    elif (inp.pointer == self.obj.pointers.xvel or inp.pointer == self.obj.pointers.yvel):
                         value = inp.GetDragValue(mousePos, 50)
 
                     # Input field text update
@@ -152,12 +152,12 @@ class ObjPopup(UI):
                     r = self.obj.color[0]
                     g = self.obj.color[1]
                     b = self.obj.color[2]
-                    if (inp.pointer == "mass"):   self.obj.SetMass(float(inp.text))
-                    elif (inp.pointer == "xvel"): self.obj.SetStartVel((float(inp.text), None))
-                    elif (inp.pointer == "yvel"): self.obj.SetStartVel((None, float(inp.text)))
-                    elif (inp.pointer == "r"):    r = int(inp.text)
-                    elif (inp.pointer == "g"):    g = int(inp.text)
-                    elif (inp.pointer == "b"):    b = int(inp.text)
+                    if (inp.pointer == self.obj.pointers.mass):   self.obj.SetMass(float(inp.text))
+                    elif (inp.pointer == self.obj.pointers.xvel): self.obj.SetStartVel((float(inp.text), None))
+                    elif (inp.pointer == self.obj.pointers.yvel): self.obj.SetStartVel((None, float(inp.text)))
+                    elif (inp.pointer == self.obj.pointers.r):    r = int(inp.text)
+                    elif (inp.pointer == self.obj.pointers.g):    g = int(inp.text)
+                    elif (inp.pointer == self.obj.pointers.b):    b = int(inp.text)
                     self.obj.SetColor(PG.Color(r,g,b))
 
                     return
@@ -165,7 +165,7 @@ class ObjPopup(UI):
             # Keyboard events for selected input
             if (inp.selected): 
                 if event.type == PG.KEYDOWN:
-                    # RETURN mean that some events need main for careful
+                    # RETURN means that some events need main for careful
                     # handling = "stuff this class cannot work with" 
                     # (e.g. arrows collide with object movement)
 
@@ -248,31 +248,31 @@ class ObjPopup(UI):
                     # Final text -> Variable change + value checks 
                     safeValue = None
                     if (inp.text == "" or inp.text == "-"):
-                        if (inp.pointer == "mass"): safeValue = 1
+                        if (inp.pointer == self.obj.pointers.mass): safeValue = 1
                         else: safeValue = 0
 
-                    if (inp.pointer == "mass"): 
+                    if (inp.pointer == self.obj.pointers.mass): 
                         if (safeValue == None): self.obj.SetMass(float(inp.text))
                         else: self.obj.SetMass(safeValue)
-                    if (inp.pointer == "xvel"): 
+                    if (inp.pointer == self.obj.pointers.xvel): 
                         if (safeValue == None): self.obj.SetStartVel((float(inp.text), None))
                         else: self.obj.SetStartVel((float(safeValue), None))
-                    if (inp.pointer == "yvel"): 
+                    if (inp.pointer == self.obj.pointers.yvel): 
                         if (safeValue == None): self.obj.SetStartVel((None, float(inp.text)))
                         else: self.obj.SetStartVel((None, float(safeValue)))
 
                     r = self.obj.color[0]
                     g = self.obj.color[1]
                     b = self.obj.color[2]
-                    if (inp.pointer == "r"): 
+                    if (inp.pointer == self.obj.pointers.r): 
                         if (safeValue == None): inp.SetText(float(inp.text))
                         else: inp.SetText(safeValue)
                         r = int(inp.text)
-                    if (inp.pointer == "g"):
+                    if (inp.pointer == self.obj.pointers.g):
                         if (safeValue == None): inp.SetText(float(inp.text))
                         else: inp.SetText(safeValue)
                         g = int(inp.text)
-                    if (inp.pointer == "b"):
+                    if (inp.pointer == self.obj.pointers.b):
                         if (safeValue == None): inp.SetText(float(inp.text))
                         else: inp.SetText(safeValue)
                         b = int(inp.text)
@@ -280,7 +280,7 @@ class ObjPopup(UI):
                     self.obj.SetColor(PG.Color(r,g,b))
 
 class InputField: 
-    def __init__(self, x,y,width,height,text="",xPadding=0,pointer="",minValue=-1,maxValue=-1,decimal=0):
+    def __init__(self, x, y, width, height, text, xPadding, pointer, minValue, maxValue, decimal):
         self.field = PG.Rect(x,y,width,height)                 # text field rectangle
         self.text = text                                       # text string
         self.cursor = 0                                        # cursor position
@@ -354,7 +354,7 @@ class InputField:
         return (self.dragOrigValue + ((mousePos - self.dragOrigPos).x)/sensitivity)
 
 class RadioButton:
-    def __init__(self, x, y, size, default=False):
+    def __init__(self, x, y, size, is_checked):
         self.rect = PG.Rect(x,y,size,size)                     # button rectangle
         self.FONT = PG.font.SysFont('Arial', 20, False, False) # default font
 
@@ -366,10 +366,10 @@ class RadioButton:
 
         # UI variables
         self.text = " "                                        # text " "/"X" button
-        self.toggle = default                                  # if it should be checked from the start
+        self.is_checked = is_checked                           # if it should be checked from the start
 
     def Draw(self, screen):
-        self.text = "X" if self.toggle else " " 
+        self.text = "X" if self.is_checked else " " 
 
         # Printing text to text surface
         # (object for Pygame text drawing)
@@ -388,8 +388,8 @@ class RadioButton:
             
         # Toggle
         if (event.type == PG.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos)):
-            self.toggle = not self.toggle
-            if (self.toggle): return 1
+            self.is_checked = not self.is_checked
+            if (self.is_checked): return 1
             else: return 0
 
 class TopMenu(UI):
@@ -400,6 +400,8 @@ class TopMenu(UI):
         self.items = []                        # For TopMenu only 1 item = tab text
 
         self.rect = None                       # Tab rectangle (set in draw)
+        self.pos = PG.Vector2()
+
         self.rectWidth = 75
         self.rectHeight = 25
         self.borderRect = PG.Rect(0,0,400,200) # Set boundaries for tabs - if cursor leaves, tab closes
@@ -415,24 +417,28 @@ class TopMenu(UI):
 
         self.color = self.NORMAL_COLOR
 
-    def Draw(self, screen, num, topbar):
+    def Setup(self, num, topbar):
         # num - number, needed for padding from other tabs
         offset = 15
         for i in range(num): offset += topbar[i].rectWidth + 15
-            
-        pos = (offset, 0)
+        self.pos = PG.Vector2(offset, 0)
+        self.rect = PG.Rect(self.pos.x, self.pos.y, self.rectWidth, self.rectHeight)
 
+        for index, item in enumerate(self.inItems): 
+            item.Setup(self.pos, index)
+
+    def Draw(self, screen):
         # Drawing own rect
-        self.rect = PG.Rect(offset, 0, self.rectWidth, self.rectHeight)
+        self.rect = PG.Rect(self.pos.x, self.pos.y, self.rectWidth, self.rectHeight)
         PG.draw.rect(screen, self.color, self.rect, border_bottom_right_radius=5, border_bottom_left_radius=5)
 
         # Tab text drawn in original UI draw
-        super().Draw(screen, pos)
+        super().Draw(screen, self.pos)
 
         # If opened, draw all the other items as well
         if (self.SELECTED):
             for index, item in enumerate(self.inItems): 
-                item.Draw(screen, pos, index)
+                item.Draw(screen)
 
     def Event_handler(self, event, others):
         # Own event handler for tabs
@@ -453,7 +459,7 @@ class TopMenu(UI):
         # Pass events to inner items if opened
         if (self.SELECTED):
             for item in self.inItems:
-                out = item.Event_hanlder(event)
+                out = item.Event_handler(event)
                 if not (out == None): return out
                 
         else: 
@@ -469,7 +475,7 @@ class TopMenu(UI):
                     if (self.items[0] == "About"): return "about"
 
 class MenuItem(UI):
-    def __init__(self, text, pointer=None, shortcut="", scPos=PG.Vector2(), width=120):
+    def __init__(self, text, width, pointer=None, shortcut="", scPos=PG.Vector2()):
         super().__init__()
         # Class for entries inside topbar tabs
 
@@ -478,6 +484,7 @@ class MenuItem(UI):
         self.items = [text]                    # items = main text 
 
         self.rect = None                       # Entry rectangle
+        self.pos = PG.Vector2()                # Rect poc
         self.shortcut = shortcut               # Shortcut text
         self.scPos = PG.Vector2(scPos)         # Shortcut line offset
         self.width = width                     # Entry width
@@ -492,23 +499,26 @@ class MenuItem(UI):
         # Default font
         self.FONT = PG.font.SysFont('Arial', 20, False, False)
 
-    def Draw(self, screen, pos, index):
+    def Setup(self, pos, index):
         pos = PG.Vector2(pos) # for readability 
-        pos = PG.Vector2(pos.x, 30+pos.y + 30*index)
+        self.pos = PG.Vector2(pos.x, 30+pos.y + 30*index)
 
+        self.rect = PG.Rect(self.pos.x, self.pos.y, self.width, 28)
+
+    def Draw(self, screen):
         # Rectangle drawing
-        self.rect = PG.Rect(pos.x, pos.y, self.width, 28)
+        self.rect = PG.Rect(self.pos.x, self.pos.y, self.width, 28)
         PG.draw.rect(screen, self.color, self.rect)
 
         # Possible shortcut drawing
         if not (self.shortcut == ""):
             textSurface = self.FONT.render(self.shortcut, True, PG.Color("gray"))
-            screen.blit(textSurface, (pos.x+self.scPos.x, 
-                                      pos.y+self.scPos.y))
+            screen.blit(textSurface, (self.pos.x+self.scPos.x, 
+                                      self.pos.y+self.scPos.y))
 
-        super().Draw(screen, pos)
+        super().Draw(screen, self.pos)
 
-    def Event_hanlder(self, event):
+    def Event_handler(self, event):
         # Own event handler
         # Colors
         if not (self.pointer == None):

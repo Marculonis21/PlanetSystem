@@ -3,6 +3,15 @@ import copy
 import numpy as np
 import pygame as PG
 import random
+from enum import Enum
+
+class ObjPointers(Enum):
+    xvel = 1
+    yvel = 2
+    mass = 3
+    r = 4
+    g = 5
+    b = 6
 
 MASS2SIZE = 1/3
 class Object:
@@ -20,6 +29,8 @@ class Object:
 
         self.static = False
 
+        self.pointers = ObjPointers
+
         self.simSteps = []
         self.ResetSteps()
 
@@ -28,7 +39,7 @@ class Object:
         self.simSteps = [simVars(self.sPos, self.sVel)]
         self.simUpdate = True
 
-    def SetStartVel(self, vel=(None, None)):
+    def SetStartVel(self, vel):
         if (vel[0] != None): self.sVel.x = vel[0]
         if (vel[1] != None): self.sVel.y = vel[1]
 
@@ -129,6 +140,6 @@ class Object:
 
 # Class for easier storing of physics step data
 class simVars:
-    def __init__(self, position=PG.Vector2(), velocity=PG.Vector2()):
+    def __init__(self, position, velocity):
         self.pos = PG.Vector2(position)
         self.vel = PG.Vector2(velocity)
